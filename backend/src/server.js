@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const produtosRoutes = require('./routes/produtosRoutes');
 
 const app = express();
 app.use(cors());
@@ -10,19 +11,9 @@ app.get('/', (req, res) => {
   res.send('Servidor TF Quadros rodando!');
 });
 
+app.use('/produtos', produtosRoutes);
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
-});
-
-const supabase = require('./services/supabaseClient');
-
-app.get('/teste-supabase', async (req, res) => {
-  const { data, error } = await supabase.from('produtos').select('*');
-
-  if (error) {
-    return res.status(500).json({ erro: error.message });
-  }
-
-  res.json(data);
 });
