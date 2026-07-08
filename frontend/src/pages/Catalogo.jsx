@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
 
 function Catalogo() {
@@ -31,8 +32,10 @@ function Catalogo() {
       <ul>
         {produtos.map((produto) => (
           <li key={produto.id}>
-            <img src={produto.imagem_url} alt={produto.nome} width="100" />
-            <h2>{produto.nome}</h2>
+            <Link to={`/produtos/${produto.id}`}>
+              <img src={produto.imagem_url} alt={produto.nome} width="100" />
+              <h2>{produto.nome}</h2>
+            </Link>
             <p>{produto.descricao}</p>
             <p>R$ {produto.preco}</p>
           </li>

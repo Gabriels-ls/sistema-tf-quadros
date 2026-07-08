@@ -12,4 +12,20 @@ async function listarProdutos(req, res) {
   res.json(data);
 }
 
-module.exports = { listarProdutos };
+async function buscarProdutoPorId(req, res) {
+  const { id } = req.params;
+
+  const { data, error } = await supabase
+    .from('produtos')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    return res.status(404).json({ erro: 'Produto não encontrado.' });
+  }
+
+  res.json(data);
+}
+
+module.exports = { listarProdutos, buscarProdutoPorId };
