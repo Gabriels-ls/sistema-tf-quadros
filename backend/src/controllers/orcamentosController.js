@@ -43,4 +43,17 @@ async function listarOrcamentosPorToken(req, res) {
   res.json(data);
 }
 
-module.exports = { criarOrcamento, listarOrcamentosPorToken };
+async function listarTodosOrcamentos(req, res) {
+  const { data, error } = await supabase
+    .from('orcamentos')
+    .select('*, produtos(nome, imagem_url)')
+    .order('criado_em', { ascending: false });
+
+  if (error) {
+    return res.status(500).json({ erro: error.message });
+  }
+
+  res.json(data);
+}
+
+module.exports = { criarOrcamento, listarOrcamentosPorToken, listarTodosOrcamentos };
