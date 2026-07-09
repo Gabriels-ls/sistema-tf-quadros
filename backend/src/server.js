@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const produtosRoutes = require('./routes/produtosRoutes');
+const orcamentosRoutes = require('./routes/orcamentosRoutes');
 
 const app = express();
 app.use(cors());
@@ -12,6 +13,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/produtos', produtosRoutes);
+
+app.use('/orcamentos', orcamentosRoutes);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
