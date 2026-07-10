@@ -7,27 +7,44 @@ function Admin() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
 
-  useEffect(() => {
-    async function carregarOrcamentos() {
-      try {
-        const { data: sessaoData } = await supabase.auth.getSession();
-        const token = sessaoData.session?.access_token;
+  async function obterToken() {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token;
+  }
 
-        const resposta = await api.get('/orcamentos', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        setOrcamentos(resposta.data);
-      } catch (err) {
-        setErro('Não foi possível carregar os orçamentos.');
-        console.error(err);
-      } finally {
-        setCarregando(false);
-      }
+  async function carregarOrcamentos() {
+    try {
+      const token = await obterToken();
+      const resposta = await api.get('/orcamentos', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setOrcamentos(resposta.data);
+    } catch (err) {
+      setErro('Não foi possível carregar os orçamentos.');
+      console.error(err);
+    } finally {
+      setCarregando(false);
     }
+  }
 
+  useEffect(() => {
     carregarOrcamentos();
   }, []);
+
+  async function handleMudarStatus(id, novoStatus) {
+    try {
+      const token = await obterToken();
+      await api.patch(
+        `/orcamentos/${id}`,
+        { status: novoStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      carregarOrcamentos();
+    } catch (err) {
+      console.error(err);
+      alert('Não foi possível atualizar o status.');
+    }
+  }
 
   if (carregando) return <p>Carregando orçamentos...</p>;
   if (erro) return <p>{erro}</p>;
@@ -46,8 +63,7 @@ function Admin() {
               <th>Cliente</th>
               <th>E-mail</th>
               <th>Telefone</th>
-              <th>Produto</th>
-              <th>Qtd</th>
+              <th>Produtos</th>
               <th>Status</th>
               <th>Data</th>
             </tr>
@@ -58,9 +74,25 @@ function Admin() {
                 <td>{orc.nome_cliente}</td>
                 <td>{orc.email_cliente}</td>
                 <td>{orc.telefone_cliente}</td>
-                <td>{orc.produtos?.nome}</td>
-                <td>{orc.quantidade}</td>
-                <td>{orc.status}</td>
+                <td>
+                  <ul>
+                    {orc.orcamento_itens?.map((item, idx) => (
+                      <li key={idx}>
+                        {item.produtos?.nome} (x{item.quantidade})
+                      </li>
+                    ))}
+                  </ul>
+                </td>
+                <td>
+                  <select
+                    value={orc.status}
+                    onChange={(e) => handleMudarStatus(orc.id, e.target.value)}
+                  >
+                    <option value="pendente">Pendente</option>
+                    <option value="em andamento">Em andamento</option>
+                    <option value="concluído">Concluído</option>
+                  </select>
+                </td>
                 <td>{new Date(orc.criado_em).toLocaleDateString('pt-BR')}</td>
               </tr>
             ))}

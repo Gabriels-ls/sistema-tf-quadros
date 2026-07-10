@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 
-function Login() {
+function LoginAdmin() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState(null);
@@ -54,4 +54,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default LoginAdmin;
