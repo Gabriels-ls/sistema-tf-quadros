@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
 import { supabase } from '../services/supabaseClient';
+import HeaderAdmin from '../components/HeaderAdmin';
 
 function Admin() {
   const [orcamentos, setOrcamentos] = useState([]);
@@ -51,9 +52,10 @@ function Admin() {
 
   return (
     <div>
+      <HeaderAdmin />
       <h1>Painel Administrativo</h1>
       <h2>Solicitações de Orçamento</h2>
-
+      
       {orcamentos.length === 0 ? (
         <p>Nenhuma solicitação recebida ainda.</p>
       ) : (

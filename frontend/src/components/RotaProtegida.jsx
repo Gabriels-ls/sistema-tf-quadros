@@ -17,7 +17,7 @@ function RotaProtegida({ children }) {
   }, []);
 
   if (carregando) return <p>Verificando acesso...</p>;
-  if (!autenticado) return <Navigate to="/loginAdmin" />;
+  if (!autenticado) return <Navigate to="/login" />;
 
   return children;
 }
