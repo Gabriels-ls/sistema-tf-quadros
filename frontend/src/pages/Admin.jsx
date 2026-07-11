@@ -80,7 +80,7 @@ function Admin() {
                   <ul>
                     {orc.orcamento_itens?.map((item, idx) => (
                       <li key={idx}>
-                        {item.produtos?.nome} (x{item.quantidade})
+                        {item.nome_produto} (x{item.quantidade})
                       </li>
                     ))}
                   </ul>

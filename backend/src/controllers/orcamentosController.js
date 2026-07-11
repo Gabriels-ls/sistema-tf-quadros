@@ -17,11 +17,27 @@ async function criarOrcamento(req, res) {
     return res.status(500).json({ erro: erroOrcamento.message });
   }
 
-  const itensParaInserir = itens.map((item) => ({
-    orcamento_id: orcamento.id,
-    produto_id: item.produto_id,
-    quantidade: item.quantidade,
-  }));
+  // Buscar os dados atuais de cada produto para "fotografar" nome e preço
+  const idsProdutos = itens.map((item) => item.produto_id);
+  const { data: produtos, error: erroProdutos } = await supabase
+    .from('produtos')
+    .select('id, nome, preco')
+    .in('id', idsProdutos);
+
+  if (erroProdutos) {
+    return res.status(500).json({ erro: erroProdutos.message });
+  }
+
+  const itensParaInserir = itens.map((item) => {
+    const produto = produtos.find((p) => p.id === Number(item.produto_id));
+    return {
+      orcamento_id: orcamento.id,
+      produto_id: item.produto_id,
+      quantidade: item.quantidade,
+      nome_produto: produto?.nome || 'Produto removido',
+      preco_produto: produto?.preco || null,
+    };
+  });
 
   const { error: erroItens } = await supabase
     .from('orcamento_itens')
@@ -39,7 +55,7 @@ async function listarOrcamentosPorToken(req, res) {
 
   const { data, error } = await supabase
     .from('orcamentos')
-    .select('*, orcamento_itens(quantidade, produtos(id, nome, imagem_url, preco))')
+    .select('*, orcamento_itens(quantidade, nome_produto, preco_produto)')
     .eq('token', token)
     .order('criado_em', { ascending: false });
 
@@ -53,7 +69,7 @@ async function listarOrcamentosPorToken(req, res) {
 async function listarTodosOrcamentos(req, res) {
   const { data, error } = await supabase
     .from('orcamentos')
-    .select('*, orcamento_itens(quantidade, produtos(id, nome, imagem_url, preco))')
+    .select('*, orcamento_itens(quantidade, nome_produto, preco_produto)')
     .order('criado_em', { ascending: false });
 
   if (error) {

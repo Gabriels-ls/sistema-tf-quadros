@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 
 function HeaderAdmin() {
@@ -11,7 +11,13 @@ function HeaderAdmin() {
 
   return (
     <header style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', borderBottom: '1px solid #ccc' }}>
-      <strong>Painel Administrativo — TF Quadros</strong>
+      <div>
+        <strong>Painel Administrativo — TF Quadros</strong>
+        <nav style={{ marginTop: '0.5rem' }}>
+          <Link to="/admin" style={{ marginRight: '1rem' }}>Orçamentos</Link>
+          <Link to="/admin/produtos">Produtos</Link>
+        </nav>
+      </div>
       <button onClick={handleLogout}>Sair</button>
     </header>
   );

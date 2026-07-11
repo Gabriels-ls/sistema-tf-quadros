@@ -5,6 +5,7 @@ import ProdutoDetalhe from './pages/ProdutoDetalhe';
 import Carrinho from './pages/Carrinho';
 import LoginAdmin from './pages/LoginAdmin';
 import Admin from './pages/Admin';
+import AdminProdutos from './pages/AdminProdutos';
 import RotaProtegida from './components/RotaProtegida';
 
 function App() {
@@ -21,6 +22,14 @@ function App() {
             element={
               <RotaProtegida>
                 <Admin />
+              </RotaProtegida>
+            }
+          />
+          <Route
+            path="/admin/produtos"
+            element={
+              <RotaProtegida>
+                <AdminProdutos />
               </RotaProtegida>
             }
           />
