@@ -20,3 +20,6 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
+
+const chatbotRoutes = require('./routes/chatbotRoutes');
+app.use('/chatbot', chatbotRoutes);
