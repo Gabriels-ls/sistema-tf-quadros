@@ -38,7 +38,7 @@ function ProdutoDetalhe() {
 
   return (
     <div>
-      <Link to="/">← Voltar ao catálogo</Link>
+      <Link to="/produtos">← Voltar ao catálogo</Link>
       <h1>{produto.nome}</h1>
       <img src={produto.imagem_url} alt={produto.nome} width="300" />
       <p>{produto.descricao}</p>

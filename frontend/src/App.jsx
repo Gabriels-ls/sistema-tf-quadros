@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { CarrinhoProvider } from './context/CarrinhoContext';
+import Home from './pages/Home';
 import Catalogo from './pages/Catalogo';
 import ProdutoDetalhe from './pages/ProdutoDetalhe';
 import Carrinho from './pages/Carrinho';
@@ -16,7 +17,8 @@ function ConteudoApp() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Catalogo />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/produtos" element={<Catalogo />} />
         <Route path="/produtos/:id" element={<ProdutoDetalhe />} />
         <Route path="/carrinho" element={<Carrinho />} />
         <Route path="/login" element={<LoginAdmin />} />
