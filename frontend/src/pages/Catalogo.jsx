@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import Layout from '../components/Layout';
+import './Catalogo.css';
 
 function Catalogo() {
   const [produtos, setProdutos] = useState([]);
@@ -23,25 +25,37 @@ function Catalogo() {
     carregarProdutos();
   }, []);
 
-  if (carregando) return <p>Carregando produtos...</p>;
-  if (erro) return <p>{erro}</p>;
-
   return (
-    <div>
-      <h1>Catálogo de Produtos</h1>
-      <ul>
-        {produtos.map((produto) => (
-          <li key={produto.id}>
-            <Link to={`/produtos/${produto.id}`}>
-              <img src={produto.imagem_url} alt={produto.nome} width="100" />
-              <h2>{produto.nome}</h2>
-            </Link>
-            <p>{produto.descricao}</p>
-            <p>R$ {produto.preco}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Layout>
+      <section className="catalogo-header">
+        <div className="container">
+          <span className="eyebrow" style={{ color: 'var(--color-accent)' }}>Catálogo</span>
+          <h1 className="catalogo-header__titulo">Nossos quadros</h1>
+        </div>
+      </section>
+
+      <section className="container catalogo-lista">
+        {carregando && <p>Carregando produtos...</p>}
+        {erro && <p>{erro}</p>}
+
+        {!carregando && !erro && (
+          <div className="catalogo-grid">
+            {produtos.map((produto) => (
+              <Link to={`/produtos/${produto.id}`} key={produto.id} className="produto-card">
+                <div className="produto-card__imagem">
+                  <img src={produto.imagem_url} alt={produto.nome} />
+                </div>
+                <div className="produto-card__info">
+                  <h2 className="produto-card__nome">{produto.nome}</h2>
+                  <p className="produto-card__descricao">{produto.descricao}</p>
+                  <span className="produto-card__preco">R$ {produto.preco}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+    </Layout>
   );
 }
 
