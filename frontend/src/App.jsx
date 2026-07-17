@@ -9,6 +9,7 @@ import Admin from './pages/Admin';
 import AdminProdutos from './pages/AdminProdutos';
 import RotaProtegida from './components/RotaProtegida';
 import ChatWidget from './components/ChatWidget';
+import Contato from './pages/Contato';
 
 function ConteudoApp() {
   const location = useLocation();
@@ -22,6 +23,7 @@ function ConteudoApp() {
         <Route path="/produtos/:id" element={<ProdutoDetalhe />} />
         <Route path="/carrinho" element={<Carrinho />} />
         <Route path="/login" element={<LoginAdmin />} />
+        <Route path="/contato" element={<Contato />} />
         <Route
           path="/admin"
           element={
