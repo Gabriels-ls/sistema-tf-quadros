@@ -1,0 +1,88 @@
+.carrinho {
+  padding: 48px 0 80px;
+  max-width: 640px;
+}
+
+.carrinho__titulo {
+  font-size: 28px;
+  margin-bottom: 24px;
+}
+
+.carrinho__itens {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 36px;
+  border-top: 1px solid #eee;
+}
+
+.carrinho__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.carrinho__item-qtd {
+  display: block;
+  color: var(--color-steel);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.carrinho__remover {
+  background: none;
+  border: none;
+  color: var(--color-steel);
+  font-size: 13px;
+  text-decoration: underline;
+}
+
+.carrinho__remover:hover {
+  color: var(--color-accent-dark);
+}
+
+.carrinho__form-box {
+  background-color: var(--color-paper);
+  padding: 28px;
+  border-radius: 6px;
+}
+
+.carrinho__subtitulo {
+  font-size: 18px;
+  margin-bottom: 18px;
+}
+
+.carrinho__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.campo label {
+  font-size: 13px;
+  color: var(--color-steel);
+}
+
+.campo input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: var(--font-body);
+}
+
+.carrinho-status {
+  padding: 80px 0;
+  text-align: center;
+}
+
+.carrinho-status h1 {
+  font-size: 26px;
+  margin-bottom: 16px;
+}
