@@ -1,5 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
+import './HeaderAdmin.css';
 
 function HeaderAdmin() {
   const navigate = useNavigate();
@@ -10,15 +11,17 @@ function HeaderAdmin() {
   }
 
   return (
-    <header style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', borderBottom: '1px solid #ccc' }}>
-      <div>
-        <strong>Painel Administrativo — TF Quadros</strong>
-        <nav style={{ marginTop: '0.5rem' }}>
-          <Link to="/admin" style={{ marginRight: '1rem' }}>Orçamentos</Link>
-          <Link to="/admin/produtos">Produtos</Link>
-        </nav>
+    <header className="header-admin">
+      <div className="container header-admin__conteudo">
+        <div>
+          <strong className="header-admin__marca">TF QUADROS — ADMIN</strong>
+          <nav className="header-admin__nav">
+            <Link to="/admin">Orçamentos</Link>
+            <Link to="/admin/produtos">Produtos</Link>
+          </nav>
+        </div>
+        <button onClick={handleLogout} className="header-admin__sair">Sair</button>
       </div>
-      <button onClick={handleLogout}>Sair</button>
     </header>
   );
 }

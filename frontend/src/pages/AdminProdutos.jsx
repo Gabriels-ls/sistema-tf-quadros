@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../services/api';
 import { supabase } from '../services/supabaseClient';
 import HeaderAdmin from '../components/HeaderAdmin';
+import './AdminProdutos.css';
 
 function AdminProdutos() {
   const [produtos, setProdutos] = useState([]);
@@ -14,6 +15,7 @@ function AdminProdutos() {
   const [preco, setPreco] = useState('');
   const [imagemUrl, setImagemUrl] = useState('');
   const [salvando, setSalvando] = useState(false);
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
   async function obterToken() {
     const { data } = await supabase.auth.getSession();
@@ -36,20 +38,22 @@ function AdminProdutos() {
     carregarProdutos();
   }, []);
 
-  function limparFormulario() {
-    setEditandoId(null);
-    setNome('');
-    setDescricao('');
-    setPreco('');
-    setImagemUrl('');
-  }
+function limparFormulario() {
+  setEditandoId(null);
+  setNome('');
+  setDescricao('');
+  setPreco('');
+  setImagemUrl('');
+  setMostrarFormulario(false);
+}
 
   function iniciarEdicao(produto) {
-    setEditandoId(produto.id);
-    setNome(produto.nome);
-    setDescricao(produto.descricao);
-    setPreco(produto.preco);
-    setImagemUrl(produto.imagem_url);
+  setEditandoId(produto.id);
+  setNome(produto.nome);
+  setDescricao(produto.descricao);
+  setPreco(produto.preco);
+  setImagemUrl(produto.imagem_url);
+  setMostrarFormulario(true);
   }
 
   async function handleSalvar(e) {
@@ -91,78 +95,102 @@ function AdminProdutos() {
       });
       carregarProdutos();
     } catch (err) {
+      const mensagem = err.response?.data?.erro || 'Não foi possível excluir o produto.';
+      alert(mensagem);
       console.error(err);
-      alert('Não foi possível excluir o produto.');
     }
   }
-
-  if (carregando) return <p>Carregando produtos...</p>;
-  if (erro) return <p>{erro}</p>;
 
   return (
     <div>
       <HeaderAdmin />
-      <h1>Gerenciar Produtos</h1>
-
-      <form onSubmit={handleSalvar}>
-        <h2>{editandoId ? 'Editar produto' : 'Novo produto'}</h2>
-        <div>
-          <label>Nome</label>
-          <input value={nome} onChange={(e) => setNome(e.target.value)} required />
-        </div>
-        <div>
-          <label>Descrição</label>
-          <input value={descricao} onChange={(e) => setDescricao(e.target.value)} required />
-        </div>
-        <div>
-          <label>Preço</label>
-          <input
-            type="number"
-            step="0.01"
-            value={preco}
-            onChange={(e) => setPreco(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>URL da imagem</label>
-          <input value={imagemUrl} onChange={(e) => setImagemUrl(e.target.value)} />
-        </div>
-        <button type="submit" disabled={salvando}>
-          {salvando ? 'Salvando...' : editandoId ? 'Salvar alterações' : 'Adicionar produto'}
-        </button>
-        {editandoId && (
-          <button type="button" onClick={limparFormulario}>
-            Cancelar edição
-          </button>
+      <div className="container admin-produtos">
+        {!mostrarFormulario && (
+          <div className="admin-produtos__acao-nova">
+            <button onClick={() => setMostrarFormulario(true)} className="btn-primario">
+              Adicionar produto
+            </button>
+          </div>
         )}
-      </form>
 
-      <hr />
+        {mostrarFormulario && (
+          <div className="admin-produtos__form-box">
+            <h2 className="admin-produtos__subtitulo">
+              {editandoId ? 'Editar produto' : 'Novo produto'}
+            </h2>
+            <form onSubmit={handleSalvar} className="admin-produtos__form">
+              <div className="campo">
+                <label>Nome</label>
+                <input value={nome} onChange={(e) => setNome(e.target.value)} required />
+              </div>
+              <div className="campo">
+                <label>Descrição</label>
+                <input value={descricao} onChange={(e) => setDescricao(e.target.value)} required />
+              </div>
+              <div className="campo">
+                <label>Preço</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={preco}
+                  onChange={(e) => setPreco(e.target.value)}
+                />
+              </div>
+              <div className="campo">
+                <label>URL da imagem</label>
+                <input value={imagemUrl} onChange={(e) => setImagemUrl(e.target.value)} />
+              </div>
+              <div className="admin-produtos__acoes-form">
+                <button type="submit" disabled={salvando} className="btn-primario">
+                  {salvando ? 'Salvando...' : editandoId ? 'Salvar alterações' : 'Adicionar produto'}
+                </button>
+                <button type="button" onClick={limparFormulario} className="admin-produtos__cancelar">
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
 
-      <h2>Produtos cadastrados</h2>
-      <table border="1" cellPadding="8">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Descrição</th>
-            <th>Preço</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {produtos.map((produto) => (
-            <tr key={produto.id}>
-              <td>{produto.nome}</td>
-              <td>{produto.descricao}</td>
-              <td>R$ {produto.preco}</td>
-              <td>
-                <button onClick={() => iniciarEdicao(produto)}>Editar</button>
-                <button onClick={() => handleExcluir(produto.id)}>Excluir</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <h1 className="admin-titulo">Produtos cadastrados</h1>
+
+        {carregando && <p>Carregando produtos...</p>}
+        {erro && <p>{erro}</p>}
+
+        {!carregando && !erro && (
+          <div className="admin-tabela-wrapper">
+            <table className="admin-tabela">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Descrição</th>
+                  <th>Preço</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {produtos.map((produto) => (
+                  <tr key={produto.id}>
+                    <td>{produto.nome}</td>
+                    <td>{produto.descricao}</td>
+                    <td>R$ {produto.preco}</td>
+                    <td>
+                      <div className="admin-produtos__acoes">
+                        <button onClick={() => iniciarEdicao(produto)} className="admin-produtos__editar">
+                          Editar
+                        </button>
+                        <button onClick={() => handleExcluir(produto.id)} className="admin-produtos__excluir">
+                          Excluir
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

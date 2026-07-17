@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../services/api';
 import { supabase } from '../services/supabaseClient';
 import HeaderAdmin from '../components/HeaderAdmin';
+import './Admin.css';
 
 function Admin() {
   const [orcamentos, setOrcamentos] = useState([]);
@@ -47,60 +48,64 @@ function Admin() {
     }
   }
 
-  if (carregando) return <p>Carregando orçamentos...</p>;
-  if (erro) return <p>{erro}</p>;
-
   return (
     <div>
       <HeaderAdmin />
-      <h1>Painel Administrativo</h1>
-      <h2>Solicitações de Orçamento</h2>
-      
-      {orcamentos.length === 0 ? (
-        <p>Nenhuma solicitação recebida ainda.</p>
-      ) : (
-        <table border="1" cellPadding="8">
-          <thead>
-            <tr>
-              <th>Cliente</th>
-              <th>E-mail</th>
-              <th>Telefone</th>
-              <th>Produtos</th>
-              <th>Status</th>
-              <th>Data</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orcamentos.map((orc) => (
-              <tr key={orc.id}>
-                <td>{orc.nome_cliente}</td>
-                <td>{orc.email_cliente}</td>
-                <td>{orc.telefone_cliente}</td>
-                <td>
-                  <ul>
-                    {orc.orcamento_itens?.map((item, idx) => (
-                      <li key={idx}>
-                        {item.nome_produto} (x{item.quantidade})
-                      </li>
-                    ))}
-                  </ul>
-                </td>
-                <td>
-                  <select
-                    value={orc.status}
-                    onChange={(e) => handleMudarStatus(orc.id, e.target.value)}
-                  >
-                    <option value="pendente">Pendente</option>
-                    <option value="em andamento">Em andamento</option>
-                    <option value="concluído">Concluído</option>
-                  </select>
-                </td>
-                <td>{new Date(orc.criado_em).toLocaleDateString('pt-BR')}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <div className="container admin-conteudo">
+        <h1 className="admin-titulo">Solicitações de Orçamento</h1>
+
+        {carregando && <p>Carregando orçamentos...</p>}
+        {erro && <p>{erro}</p>}
+
+        {!carregando && !erro && orcamentos.length === 0 && (
+          <p>Nenhuma solicitação recebida ainda.</p>
+        )}
+
+        {!carregando && !erro && orcamentos.length > 0 && (
+          <div className="admin-tabela-wrapper">
+            <table className="admin-tabela">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>E-mail</th>
+                  <th>Telefone</th>
+                  <th>Produtos</th>
+                  <th>Status</th>
+                  <th>Data</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orcamentos.map((orc) => (
+                  <tr key={orc.id}>
+                    <td>{orc.nome_cliente}</td>
+                    <td>{orc.email_cliente}</td>
+                    <td>{orc.telefone_cliente}</td>
+                    <td>
+                      <ul className="admin-lista-produtos">
+                        {orc.orcamento_itens?.map((item, idx) => (
+                          <li key={idx}>{item.nome_produto} (x{item.quantidade})</li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td>
+                      <select
+                        className={`admin-status admin-status--${orc.status?.replace(' ', '-')}`}
+                        value={orc.status}
+                        onChange={(e) => handleMudarStatus(orc.id, e.target.value)}
+                      >
+                        <option value="pendente">Pendente</option>
+                        <option value="em andamento">Em andamento</option>
+                        <option value="concluído">Concluído</option>
+                      </select>
+                    </td>
+                    <td>{new Date(orc.criado_em).toLocaleDateString('pt-BR')}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
