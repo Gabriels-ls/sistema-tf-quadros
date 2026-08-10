@@ -44,3 +44,23 @@
 .header-admin__sair:hover {
   border-color: var(--color-white);
 }
+
+@media (max-width: 640px) {
+  .header-admin {
+    margin-bottom: 24px;
+  }
+
+  .header-admin__conteudo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .header-admin__nav {
+    gap: 14px;
+  }
+
+  .header-admin__sair {
+    align-self: flex-end;
+  }
+}

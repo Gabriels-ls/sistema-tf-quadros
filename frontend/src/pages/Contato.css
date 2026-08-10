@@ -10,7 +10,8 @@
 }
 
 .contato-conteudo {
-  padding: 48px 0 80px;
+  padding-top: 48px;
+  padding-bottom: 80px;
   max-width: 640px;
 }
 

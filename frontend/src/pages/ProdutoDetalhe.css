@@ -1,5 +1,6 @@
 .produto-detalhe {
-  padding: 40px 0 80px;
+  padding-top: 40px;
+  padding-bottom: 80px;
 }
 
 .produto-detalhe__voltar {

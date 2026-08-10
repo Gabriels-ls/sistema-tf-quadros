@@ -40,3 +40,13 @@
   font-size: 13px;
   margin: 0;
 }
+
+@media (max-width: 640px) {
+  .login-pagina {
+    padding: 16px;
+  }
+
+  .login-caixa {
+    padding: 28px 22px;
+  }
+}

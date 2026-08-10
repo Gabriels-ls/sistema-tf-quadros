@@ -63,3 +63,20 @@
   border-color: #2E7D32;
   color: #2E7D32;
 }
+
+@media (max-width: 640px) {
+  .admin-titulo {
+    font-size: 18px;
+    margin-bottom: 18px;
+  }
+
+  .admin-tabela {
+    min-width: 560px;
+    font-size: 13px;
+  }
+
+  .admin-tabela th,
+  .admin-tabela td {
+    padding: 10px 12px;
+  }
+}

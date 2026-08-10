@@ -1,5 +1,6 @@
 .carrinho {
-  padding: 48px 0 80px;
+  padding-top: 48px;
+  padding-bottom: 80px;
   max-width: 640px;
 }
 
@@ -78,11 +79,33 @@
 }
 
 .carrinho-status {
-  padding: 80px 0;
+  padding-top: 80px;
+  padding-bottom: 80px;
   text-align: center;
 }
 
 .carrinho-status h1 {
   font-size: 26px;
   margin-bottom: 16px;
+}
+
+@media (max-width: 640px) {
+  .carrinho {
+    padding-top: 32px;
+    padding-bottom: 56px;
+  }
+
+  .carrinho__titulo {
+    font-size: 22px;
+    margin-bottom: 18px;
+  }
+
+  .carrinho__item {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .carrinho__form-box {
+    padding: 20px;
+  }
 }

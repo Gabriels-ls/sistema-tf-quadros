@@ -63,3 +63,14 @@
   text-align: center;
   margin-bottom: 40px;
 }
+
+@media (max-width: 640px) {
+  .admin-produtos__form-box {
+    padding: 18px;
+    margin-bottom: 28px;
+  }
+
+  .admin-produtos__acoes-form {
+    flex-wrap: wrap;
+  }
+}
