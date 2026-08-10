@@ -30,6 +30,8 @@ function Admin() {
   }
 
   useEffect(() => {
+    // carregarOrcamentos é reaproveitada por handleMudarStatus; setState só ocorre após o await.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     carregarOrcamentos();
   }, []);
 

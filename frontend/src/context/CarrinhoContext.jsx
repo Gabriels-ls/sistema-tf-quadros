@@ -1,6 +1,5 @@
-import { createContext, useContext, useState } from 'react';
-
-const CarrinhoContext = createContext();
+import { useState } from 'react';
+import { CarrinhoContext } from './carrinho-context';
 
 export function CarrinhoProvider({ children }) {
   const [itens, setItens] = useState([]);
@@ -32,8 +31,4 @@ export function CarrinhoProvider({ children }) {
       {children}
     </CarrinhoContext.Provider>
   );
-}
-
-export function useCarrinho() {
-  return useContext(CarrinhoContext);
 }

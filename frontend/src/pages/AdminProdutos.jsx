@@ -35,6 +35,8 @@ function AdminProdutos() {
   }
 
   useEffect(() => {
+    // carregarProdutos é reaproveitada por handleSalvar/handleExcluir; setState só ocorre após o await.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     carregarProdutos();
   }, []);
 

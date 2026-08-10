@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useCarrinho } from '../context/CarrinhoContext';
+import { useCarrinho } from '../context/useCarrinho';
 import api from '../services/api';
 import obterTokenCliente from '../services/clienteToken';
 import Layout from '../components/Layout';

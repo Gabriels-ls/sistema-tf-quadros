@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { useCarrinho } from '../context/CarrinhoContext';
+import { useCarrinho } from '../context/useCarrinho';
 import Layout from '../components/Layout';
 import './ProdutoDetalhe.css';
 
