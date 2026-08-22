@@ -1,6 +1,8 @@
 const supabase = require('../services/supabaseClient');
 const openai = require('../services/openaiClient');
 
+const MAX_CARACTERES_MENSAGEM = 500;
+
 const CONTEXTO_SISTEMA = `
 Você é um assistente virtual da TF Quadros, uma empresa que fabrica quadros para serigrafia.
 Seu papel é tirar dúvidas iniciais dos clientes sobre produtos, tamanhos, prazos e processo de orçamento.
@@ -16,6 +18,12 @@ async function conversar(req, res) {
     return res.status(400).json({ erro: 'Mensagem e token são obrigatórios.' });
   }
 
+  if (mensagem.length > MAX_CARACTERES_MENSAGEM) {
+    return res.status(400).json({
+      erro: `Mensagem muito longa. Limite de ${MAX_CARACTERES_MENSAGEM} caracteres.`,
+    });
+  }
+
   try {
     const resposta = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
@@ -26,12 +34,6 @@ async function conversar(req, res) {
     });
 
     const respostaTexto = resposta.choices[0].message.content;
-
-    await supabase.from('conversas_chatbot').insert([{
-      token,
-      mensagem_usuario: mensagem,
-      resposta_bot: respostaTexto,
-    }]);
 
     res.json({ resposta: respostaTexto });
   } catch (err) {

@@ -48,7 +48,7 @@ Each resource follows the same three-file pattern under `backend/src/`:
 
 **Orçamento (budget) line items are snapshotted**: `criarOrcamento` copies each product's current `nome`/`preco` into `orcamento_itens` at creation time, rather than joining live against `produtos`. This is intentional — historical budgets must not change if a product is later edited or deleted.
 
-**Chatbot**: `chatbotController.js` sends a fixed Portuguese system prompt (the assistant is instructed never to quote exact prices/deadlines and to steer users to the "Adicionar ao orçamento" flow) plus the user's message to `gpt-4o-mini`, and logs every exchange to the `conversas_chatbot` Supabase table.
+**Chatbot**: `chatbotController.js` sends a fixed Portuguese system prompt (the assistant is instructed never to quote exact prices/deadlines and to steer users to the "Adicionar ao orçamento" flow) plus the user's message to `gpt-4o-mini`. No conversation history is persisted.
 
 ### Frontend: page-per-route, two auth models coexisting
 `App.jsx` defines all routes directly (no nested router config file). Public pages (`Home`, `Catalogo`, `ProdutoDetalhe`, `Carrinho`, `Contato`) vs. admin pages (`Admin`, `AdminProdutos`) are distinguished by wrapping admin routes in `RotaProtegida`, which checks `supabase.auth.getSession()` client-side and redirects to `/login` if absent. The chat widget (`ChatWidget`) is rendered globally except on `/admin*` and `/login`.
