@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCarrinho } from '../context/useCarrinho';
+import { useChat } from '../context/useChat';
 import api from '../services/api';
 import obterTokenCliente from '../services/clienteToken';
 import Layout from '../components/Layout';
@@ -8,6 +9,7 @@ import './Carrinho.css';
 
 function Carrinho() {
   const { itens, removerItem, limparCarrinho } = useCarrinho();
+  const { mensagens, limparConversa } = useChat();
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [telefone, setTelefone] = useState('');
@@ -21,15 +23,27 @@ function Carrinho() {
     try {
       const token = obterTokenCliente();
 
+      // Só envia o histórico se o cliente de fato escreveu algo no chat,
+      // nunca para o bate-papo padrão (mensagem de boas-vindas do bot).
+      const houveInteracao = mensagens.some((m) => m.autor === 'usuario');
+      const historicoConversa = houveInteracao
+        ? mensagens.map((m) => ({
+            remetente: m.autor === 'usuario' ? 'cliente' : 'assistente',
+            mensagem: m.texto,
+          }))
+        : undefined;
+
       await api.post('/orcamentos', {
         nome_cliente: nome,
         email_cliente: email,
         telefone_cliente: telefone,
         token,
         itens: itens.map((i) => ({ produto_id: i.produto.id, quantidade: i.quantidade })),
+        historicoConversa,
       });
 
       limparCarrinho();
+      limparConversa();
       setSucesso(true);
     } catch (err) {
       console.error(err);

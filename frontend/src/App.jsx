@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { CarrinhoProvider } from './context/CarrinhoContext';
+import { ChatProvider } from './context/ChatContext';
 import Home from './pages/Home';
 import Catalogo from './pages/Catalogo';
 import ProdutoDetalhe from './pages/ProdutoDetalhe';
@@ -49,9 +50,11 @@ function ConteudoApp() {
 function App() {
   return (
     <CarrinhoProvider>
-      <BrowserRouter>
-        <ConteudoApp />
-      </BrowserRouter>
+      <ChatProvider>
+        <BrowserRouter>
+          <ConteudoApp />
+        </BrowserRouter>
+      </ChatProvider>
     </CarrinhoProvider>
   );
 }

@@ -1,15 +1,57 @@
 const supabase = require('../services/supabaseClient');
+const openai = require('../services/openaiClient');
+
+const CONTEXTO_RESUMO = `
+Você resume conversas entre um cliente e o assistente virtual da TF Quadros, uma empresa que fabrica quadros para serigrafia.
+Leia a conversa e escreva UMA única frase curta e direta (máximo 12 palavras) com o principal interesse ou dúvida do cliente.
+Sem saudação, sem "o cliente perguntou/demonstrou", vá direto ao ponto (ex: "Quadro 100x150cm, quer prazo e disponibilidade").
+Não invente informações que não estejam na conversa.
+`;
+
+function mensagensValidas(historicoConversa) {
+  if (!Array.isArray(historicoConversa)) return [];
+  return historicoConversa.filter(
+    (msg) =>
+      ['cliente', 'assistente'].includes(msg?.remetente) &&
+      typeof msg.mensagem === 'string' &&
+      msg.mensagem.trim().length > 0
+  );
+}
+
+async function gerarResumoConversa(mensagens) {
+  const transcricao = mensagens
+    .map((msg) => `${msg.remetente === 'cliente' ? 'Cliente' : 'Assistente'}: ${msg.mensagem.trim()}`)
+    .join('\n');
+
+  try {
+    const resposta = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: CONTEXTO_RESUMO },
+        { role: 'user', content: transcricao },
+      ],
+    });
+
+    return resposta.choices[0].message.content.trim();
+  } catch (err) {
+    console.error('Erro ao gerar resumo da conversa:', err);
+    return null;
+  }
+}
 
 async function criarOrcamento(req, res) {
-  const { nome_cliente, email_cliente, telefone_cliente, token, itens } = req.body;
+  const { nome_cliente, email_cliente, telefone_cliente, token, itens, historicoConversa } = req.body;
 
   if (!nome_cliente || !email_cliente || !itens || itens.length === 0) {
     return res.status(400).json({ erro: 'Nome, e-mail e ao menos um produto são obrigatórios.' });
   }
 
+  const mensagens = mensagensValidas(historicoConversa);
+  const resumoConversa = mensagens.length > 0 ? await gerarResumoConversa(mensagens) : null;
+
   const { data: orcamento, error: erroOrcamento } = await supabase
     .from('orcamentos')
-    .insert([{ nome_cliente, email_cliente, telefone_cliente, token, status: 'pendente' }])
+    .insert([{ nome_cliente, email_cliente, telefone_cliente, token, status: 'pendente', resumo_conversa: resumoConversa }])
     .select()
     .single();
 
@@ -47,6 +89,24 @@ async function criarOrcamento(req, res) {
     return res.status(500).json({ erro: erroItens.message });
   }
 
+  // Histórico do chatbot é opcional e não deve derrubar a criação do orçamento se falhar.
+  if (mensagens.length > 0) {
+    const linhasHistorico = mensagens.map((msg, index) => ({
+      orcamento_id: orcamento.id,
+      ordem: index,
+      remetente: msg.remetente,
+      mensagem: msg.mensagem.trim(),
+    }));
+
+    const { error: erroHistorico } = await supabase
+      .from('historico_chatbot')
+      .insert(linhasHistorico);
+
+    if (erroHistorico) {
+      console.error('Erro ao salvar histórico do chatbot:', erroHistorico.message);
+    }
+  }
+
   res.status(201).json(orcamento);
 }
 
@@ -69,8 +129,9 @@ async function listarOrcamentosPorToken(req, res) {
 async function listarTodosOrcamentos(req, res) {
   const { data, error } = await supabase
     .from('orcamentos')
-    .select('*, orcamento_itens(quantidade, nome_produto, preco_produto)')
-    .order('criado_em', { ascending: false });
+    .select('*, orcamento_itens(quantidade, nome_produto, preco_produto), historico_chatbot(ordem, remetente, mensagem)')
+    .order('criado_em', { ascending: false })
+    .order('ordem', { foreignTable: 'historico_chatbot', ascending: true });
 
   if (error) {
     return res.status(500).json({ erro: error.message });

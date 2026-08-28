@@ -1,12 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import api from '../services/api';
 import obterTokenCliente from '../services/clienteToken';
+import { useChat } from '../context/useChat';
 
 function ChatWidget() {
+  const { mensagens, adicionarMensagem } = useChat();
   const [aberto, setAberto] = useState(false);
-  const [mensagens, setMensagens] = useState([
-    { autor: 'bot', texto: 'Olá! Sou o assistente virtual da TF Quadros. Como posso ajudar?' },
-  ]);
   const [entrada, setEntrada] = useState('');
   const [enviando, setEnviando] = useState(false);
   const fimDasMensagensRef = useRef(null);
@@ -20,7 +19,7 @@ function ChatWidget() {
     if (!entrada.trim()) return;
 
     const mensagemUsuario = entrada;
-    setMensagens((atual) => [...atual, { autor: 'usuario', texto: mensagemUsuario }]);
+    adicionarMensagem('usuario', mensagemUsuario);
     setEntrada('');
     setEnviando(true);
 
@@ -28,13 +27,10 @@ function ChatWidget() {
       const token = obterTokenCliente();
       const resposta = await api.post('/chatbot', { mensagem: mensagemUsuario, token });
 
-      setMensagens((atual) => [...atual, { autor: 'bot', texto: resposta.data.resposta }]);
+      adicionarMensagem('bot', resposta.data.resposta);
     } catch (err) {
       console.error(err);
-      setMensagens((atual) => [
-        ...atual,
-        { autor: 'bot', texto: 'Desculpe, não consegui responder agora. Tente novamente em instantes.' },
-      ]);
+      adicionarMensagem('bot', 'Desculpe, não consegui responder agora. Tente novamente em instantes.');
     } finally {
       setEnviando(false);
     }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import api from '../services/api';
 import { supabase } from '../services/supabaseClient';
 import HeaderAdmin from '../components/HeaderAdmin';
@@ -8,6 +8,7 @@ function Admin() {
   const [orcamentos, setOrcamentos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
+  const [conversaExpandida, setConversaExpandida] = useState(null);
 
   async function obterToken() {
     const { data } = await supabase.auth.getSession();
@@ -72,36 +73,71 @@ function Admin() {
                   <th>E-mail</th>
                   <th>Telefone</th>
                   <th>Produtos</th>
+                  <th>Conversa</th>
                   <th>Status</th>
                   <th>Data</th>
                 </tr>
               </thead>
               <tbody>
                 {orcamentos.map((orc) => (
-                  <tr key={orc.id}>
-                    <td>{orc.nome_cliente}</td>
-                    <td>{orc.email_cliente}</td>
-                    <td>{orc.telefone_cliente}</td>
-                    <td>
-                      <ul className="admin-lista-produtos">
-                        {orc.orcamento_itens?.map((item, idx) => (
-                          <li key={idx}>{item.nome_produto} (x{item.quantidade})</li>
-                        ))}
-                      </ul>
-                    </td>
-                    <td>
-                      <select
-                        className={`admin-status admin-status--${orc.status?.replace(' ', '-')}`}
-                        value={orc.status}
-                        onChange={(e) => handleMudarStatus(orc.id, e.target.value)}
-                      >
-                        <option value="pendente">Pendente</option>
-                        <option value="em andamento">Em andamento</option>
-                        <option value="concluído">Concluído</option>
-                      </select>
-                    </td>
-                    <td>{new Date(orc.criado_em).toLocaleDateString('pt-BR')}</td>
-                  </tr>
+                  <Fragment key={orc.id}>
+                    <tr>
+                      <td>{orc.nome_cliente}</td>
+                      <td>{orc.email_cliente}</td>
+                      <td>{orc.telefone_cliente}</td>
+                      <td>
+                        <ul className="admin-lista-produtos">
+                          {orc.orcamento_itens?.map((item, idx) => (
+                            <li key={idx}>{item.nome_produto} (x{item.quantidade})</li>
+                          ))}
+                        </ul>
+                      </td>
+                      <td>
+                        {orc.resumo_conversa ? (
+                          <button
+                            type="button"
+                            className="admin-botao-conversa"
+                            onClick={() => setConversaExpandida(conversaExpandida === orc.id ? null : orc.id)}
+                          >
+                            {conversaExpandida === orc.id ? 'Ocultar conversa' : 'Ver conversa'}
+                          </button>
+                        ) : (
+                          <span className="admin-sem-conversa">Sem conversa</span>
+                        )}
+                      </td>
+                      <td>
+                        <select
+                          className={`admin-status admin-status--${orc.status?.replace(' ', '-')}`}
+                          value={orc.status}
+                          onChange={(e) => handleMudarStatus(orc.id, e.target.value)}
+                        >
+                          <option value="pendente">Pendente</option>
+                          <option value="em andamento">Em andamento</option>
+                          <option value="concluído">Concluído</option>
+                        </select>
+                      </td>
+                      <td>{new Date(orc.criado_em).toLocaleDateString('pt-BR')}</td>
+                    </tr>
+                    {conversaExpandida === orc.id && (
+                      <tr>
+                        <td colSpan={7}>
+                          <div className="admin-conversa-detalhe">
+                            <p className="admin-resumo-conversa">{orc.resumo_conversa}</p>
+                            <ul className="admin-historico-completo">
+                              {orc.historico_chatbot?.map((msg, idx) => (
+                                <li
+                                  key={idx}
+                                  className={`admin-historico-msg admin-historico-msg--${msg.remetente}`}
+                                >
+                                  <strong>{msg.remetente === 'cliente' ? 'Cliente' : 'Assistente'}:</strong> {msg.mensagem}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 ))}
               </tbody>
             </table>

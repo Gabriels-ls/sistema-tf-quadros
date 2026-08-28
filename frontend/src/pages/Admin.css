@@ -64,6 +64,63 @@
   color: #2E7D32;
 }
 
+.admin-sem-conversa {
+  color: var(--color-steel);
+  font-style: italic;
+}
+
+.admin-botao-conversa {
+  background: none;
+  border: 1px solid var(--color-primary);
+  border-radius: 4px;
+  padding: 6px 10px;
+  color: var(--color-primary);
+  font-size: 13px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.admin-botao-conversa:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.admin-conversa-detalhe {
+  background-color: var(--color-paper);
+  border-radius: 4px;
+  padding: 14px 16px;
+}
+
+.admin-resumo-conversa {
+  margin: 0 0 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #ddd;
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.admin-historico-completo {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-historico-msg {
+  font-size: 13px;
+}
+
+.admin-historico-msg--cliente strong {
+  color: var(--color-primary);
+}
+
+.admin-historico-msg--assistente strong {
+  color: var(--color-steel);
+}
+
 @media (max-width: 640px) {
   .admin-titulo {
     font-size: 18px;
