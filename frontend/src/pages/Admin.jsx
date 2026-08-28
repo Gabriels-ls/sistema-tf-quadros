@@ -88,7 +88,10 @@ function Admin() {
                       <td>
                         <ul className="admin-lista-produtos">
                           {orc.orcamento_itens?.map((item, idx) => (
-                            <li key={idx}>{item.nome_produto} (x{item.quantidade})</li>
+                            <li key={idx}>
+                              {item.nome_produto}
+                              {item.variacao_nome ? ` - ${item.variacao_nome}` : ''} (x{item.quantidade})
+                            </li>
                           ))}
                         </ul>
                       </td>

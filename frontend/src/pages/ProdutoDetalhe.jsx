@@ -11,6 +11,7 @@ function ProdutoDetalhe() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
   const [quantidade, setQuantidade] = useState(1);
+  const [variacaoId, setVariacaoId] = useState('');
   const { adicionarItem } = useCarrinho();
   const navigate = useNavigate();
 
@@ -19,6 +20,9 @@ function ProdutoDetalhe() {
       try {
         const resposta = await api.get(`/produtos/${id}`);
         setProduto(resposta.data);
+        if (resposta.data.produto_variacoes?.length > 0) {
+          setVariacaoId(String(resposta.data.produto_variacoes[0].id));
+        }
       } catch (err) {
         setErro('Produto não encontrado.');
         console.error(err);
@@ -30,8 +34,13 @@ function ProdutoDetalhe() {
     carregarProduto();
   }, [id]);
 
+  const variacaoSelecionada = produto?.produto_variacoes?.find(
+    (v) => String(v.id) === variacaoId
+  );
+  const precoExibido = variacaoSelecionada?.preco ?? produto?.preco;
+
   function handleAdicionar() {
-    adicionarItem(produto, Number(quantidade));
+    adicionarItem(produto, Number(quantidade), variacaoSelecionada || null);
     navigate('/carrinho');
   }
 
@@ -67,8 +76,25 @@ function ProdutoDetalhe() {
 
           <div className="produto-detalhe__info">
             <h1 className="produto-detalhe__nome">{produto.nome}</h1>
-            <p className="produto-detalhe__preco">R$ {produto.preco}</p>
+            <p className="produto-detalhe__preco">R$ {precoExibido}</p>
             <p className="produto-detalhe__descricao">{produto.descricao}</p>
+
+            {produto.produto_variacoes?.length > 0 && (
+              <div className="produto-detalhe__variacao">
+                <label htmlFor="variacao">Variação</label>
+                <select
+                  id="variacao"
+                  value={variacaoId}
+                  onChange={(e) => setVariacaoId(e.target.value)}
+                >
+                  {produto.produto_variacoes.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.nome} — R$ {v.preco}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div className="produto-detalhe__quantidade">
               <label htmlFor="quantidade">Quantidade</label>

@@ -38,7 +38,11 @@ function Carrinho() {
         email_cliente: email,
         telefone_cliente: telefone,
         token,
-        itens: itens.map((i) => ({ produto_id: i.produto.id, quantidade: i.quantidade })),
+        itens: itens.map((i) => ({
+          produto_id: i.produto.id,
+          quantidade: i.quantidade,
+          variacao_id: i.variacao?.id,
+        })),
         historicoConversa,
       });
 
@@ -83,12 +87,18 @@ function Carrinho() {
 
         <ul className="carrinho__itens">
           {itens.map((item) => (
-            <li key={item.produto.id} className="carrinho__item">
+            <li key={`${item.produto.id}-${item.variacao?.id ?? 'base'}`} className="carrinho__item">
               <div>
-                <strong>{item.produto.nome}</strong>
+                <strong>
+                  {item.produto.nome}
+                  {item.variacao ? ` - ${item.variacao.nome}` : ''}
+                </strong>
                 <span className="carrinho__item-qtd">Qtd: {item.quantidade}</span>
               </div>
-              <button onClick={() => removerItem(item.produto.id)} className="carrinho__remover">
+              <button
+                onClick={() => removerItem(item.produto.id, item.variacao?.id ?? null)}
+                className="carrinho__remover"
+              >
                 Remover
               </button>
             </li>

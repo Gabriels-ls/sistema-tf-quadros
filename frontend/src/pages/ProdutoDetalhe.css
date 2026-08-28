@@ -54,20 +54,27 @@
   margin-bottom: 28px;
 }
 
-.produto-detalhe__quantidade {
+.produto-detalhe__quantidade,
+.produto-detalhe__variacao {
   display: flex;
   flex-direction: column;
   gap: 6px;
   margin-bottom: 24px;
+  max-width: 260px;
+}
+
+.produto-detalhe__quantidade {
   max-width: 120px;
 }
 
-.produto-detalhe__quantidade label {
+.produto-detalhe__quantidade label,
+.produto-detalhe__variacao label {
   font-size: 13px;
   color: var(--color-steel);
 }
 
-.produto-detalhe__quantidade input {
+.produto-detalhe__quantidade input,
+.produto-detalhe__variacao select {
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;

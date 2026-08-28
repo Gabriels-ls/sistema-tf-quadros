@@ -17,6 +17,13 @@ function AdminProdutos() {
   const [salvando, setSalvando] = useState(false);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
+  const [editandoVariacaoId, setEditandoVariacaoId] = useState(null);
+  const [nomeVariacao, setNomeVariacao] = useState('');
+  const [precoVariacao, setPrecoVariacao] = useState('');
+  const [salvandoVariacao, setSalvandoVariacao] = useState(false);
+
+  const produtoEmEdicao = produtos.find((p) => p.id === editandoId);
+
   async function obterToken() {
     const { data } = await supabase.auth.getSession();
     return data.session?.access_token;
@@ -47,6 +54,7 @@ function limparFormulario() {
   setPreco('');
   setImagemUrl('');
   setMostrarFormulario(false);
+  limparFormularioVariacao();
 }
 
   function iniciarEdicao(produto) {
@@ -56,6 +64,63 @@ function limparFormulario() {
   setPreco(produto.preco);
   setImagemUrl(produto.imagem_url);
   setMostrarFormulario(true);
+  limparFormularioVariacao();
+  }
+
+  function limparFormularioVariacao() {
+    setEditandoVariacaoId(null);
+    setNomeVariacao('');
+    setPrecoVariacao('');
+  }
+
+  function iniciarEdicaoVariacao(variacao) {
+    setEditandoVariacaoId(variacao.id);
+    setNomeVariacao(variacao.nome);
+    setPrecoVariacao(variacao.preco);
+  }
+
+  async function handleSalvarVariacao(e) {
+    e.preventDefault();
+    setSalvandoVariacao(true);
+
+    try {
+      const token = await obterToken();
+      const dados = { nome: nomeVariacao, preco: precoVariacao };
+
+      if (editandoVariacaoId) {
+        await api.put(`/produtos/${editandoId}/variacoes/${editandoVariacaoId}`, dados, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else {
+        await api.post(`/produtos/${editandoId}/variacoes`, dados, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+
+      limparFormularioVariacao();
+      carregarProdutos();
+    } catch (err) {
+      console.error(err);
+      alert('Não foi possível salvar a variação.');
+    } finally {
+      setSalvandoVariacao(false);
+    }
+  }
+
+  async function handleExcluirVariacao(variacaoId) {
+    const confirmar = window.confirm('Tem certeza que deseja excluir esta variação?');
+    if (!confirmar) return;
+
+    try {
+      const token = await obterToken();
+      await api.delete(`/produtos/${editandoId}/variacoes/${variacaoId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      carregarProdutos();
+    } catch (err) {
+      console.error(err);
+      alert('Não foi possível excluir a variação.');
+    }
   }
 
   async function handleSalvar(e) {
@@ -151,6 +216,69 @@ function limparFormulario() {
                 </button>
               </div>
             </form>
+
+            {editandoId && (
+              <div className="admin-produtos__variacoes">
+                <h3 className="admin-produtos__subtitulo-variacoes">
+                  Variações (opcional — ex: material, acabamento)
+                </h3>
+
+                {produtoEmEdicao?.produto_variacoes?.length > 0 && (
+                  <ul className="admin-produtos__lista-variacoes">
+                    {produtoEmEdicao.produto_variacoes.map((v) => (
+                      <li key={v.id}>
+                        <span>{v.nome} — R$ {v.preco}</span>
+                        <div className="admin-produtos__acoes">
+                          <button
+                            type="button"
+                            onClick={() => iniciarEdicaoVariacao(v)}
+                            className="admin-produtos__editar"
+                          >
+                            Editar
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleExcluirVariacao(v.id)}
+                            className="admin-produtos__excluir"
+                          >
+                            Excluir
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                <form onSubmit={handleSalvarVariacao} className="admin-produtos__form-variacao">
+                  <input
+                    placeholder="Nome (ex: Alumínio)"
+                    value={nomeVariacao}
+                    onChange={(e) => setNomeVariacao(e.target.value)}
+                    required
+                  />
+                  <input
+                    type="number"
+                    step="0.01"
+                    placeholder="Preço"
+                    value={precoVariacao}
+                    onChange={(e) => setPrecoVariacao(e.target.value)}
+                    required
+                  />
+                  <button type="submit" disabled={salvandoVariacao} className="btn-primario">
+                    {editandoVariacaoId ? 'Salvar variação' : 'Adicionar variação'}
+                  </button>
+                  {editandoVariacaoId && (
+                    <button
+                      type="button"
+                      onClick={limparFormularioVariacao}
+                      className="admin-produtos__cancelar"
+                    >
+                      Cancelar
+                    </button>
+                  )}
+                </form>
+              </div>
+            )}
           </div>
         )}
 
@@ -167,6 +295,7 @@ function limparFormulario() {
                   <th>Nome</th>
                   <th>Descrição</th>
                   <th>Preço</th>
+                  <th>Variações</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -176,6 +305,11 @@ function limparFormulario() {
                     <td>{produto.nome}</td>
                     <td>{produto.descricao}</td>
                     <td>R$ {produto.preco}</td>
+                    <td>
+                      {produto.produto_variacoes?.length > 0
+                        ? `${produto.produto_variacoes.length} variação(ões)`
+                        : '—'}
+                    </td>
                     <td>
                       <div className="admin-produtos__acoes">
                         <button onClick={() => iniciarEdicao(produto)} className="admin-produtos__editar">

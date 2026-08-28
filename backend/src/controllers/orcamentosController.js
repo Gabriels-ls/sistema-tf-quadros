@@ -70,14 +70,32 @@ async function criarOrcamento(req, res) {
     return res.status(500).json({ erro: erroProdutos.message });
   }
 
+  const idsVariacoes = itens.map((item) => item.variacao_id).filter(Boolean);
+  let variacoes = [];
+  if (idsVariacoes.length > 0) {
+    const { data: dadosVariacoes, error: erroVariacoes } = await supabase
+      .from('produto_variacoes')
+      .select('id, nome, preco')
+      .in('id', idsVariacoes);
+
+    if (erroVariacoes) {
+      return res.status(500).json({ erro: erroVariacoes.message });
+    }
+    variacoes = dadosVariacoes;
+  }
+
   const itensParaInserir = itens.map((item) => {
     const produto = produtos.find((p) => p.id === Number(item.produto_id));
+    const variacao = item.variacao_id
+      ? variacoes.find((v) => v.id === Number(item.variacao_id))
+      : null;
     return {
       orcamento_id: orcamento.id,
       produto_id: item.produto_id,
       quantidade: item.quantidade,
       nome_produto: produto?.nome || 'Produto removido',
-      preco_produto: produto?.preco || null,
+      preco_produto: variacao?.preco ?? produto?.preco ?? null,
+      variacao_nome: variacao?.nome || null,
     };
   });
 
@@ -115,7 +133,7 @@ async function listarOrcamentosPorToken(req, res) {
 
   const { data, error } = await supabase
     .from('orcamentos')
-    .select('*, orcamento_itens(quantidade, nome_produto, preco_produto)')
+    .select('*, orcamento_itens(quantidade, nome_produto, preco_produto, variacao_nome)')
     .eq('token', token)
     .order('criado_em', { ascending: false });
 
@@ -129,7 +147,7 @@ async function listarOrcamentosPorToken(req, res) {
 async function listarTodosOrcamentos(req, res) {
   const { data, error } = await supabase
     .from('orcamentos')
-    .select('*, orcamento_itens(quantidade, nome_produto, preco_produto), historico_chatbot(ordem, remetente, mensagem)')
+    .select('*, orcamento_itens(quantidade, nome_produto, preco_produto, variacao_nome), historico_chatbot(ordem, remetente, mensagem)')
     .order('criado_em', { ascending: false })
     .order('ordem', { foreignTable: 'historico_chatbot', ascending: true });
 
