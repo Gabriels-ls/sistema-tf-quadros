@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from 'react';
 import api from '../services/api';
-import { supabase } from '../services/supabaseClient';
+import { obterTokenAdmin } from '../services/adminAuth';
 import HeaderAdmin from '../components/HeaderAdmin';
 import './Admin.css';
 
@@ -10,14 +10,9 @@ function Admin() {
   const [erro, setErro] = useState(null);
   const [conversaExpandida, setConversaExpandida] = useState(null);
 
-  async function obterToken() {
-    const { data } = await supabase.auth.getSession();
-    return data.session?.access_token;
-  }
-
   async function carregarOrcamentos() {
     try {
-      const token = await obterToken();
+      const token = obterTokenAdmin();
       const resposta = await api.get('/orcamentos', {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -38,7 +33,7 @@ function Admin() {
 
   async function handleMudarStatus(id, novoStatus) {
     try {
-      const token = await obterToken();
+      const token = obterTokenAdmin();
       await api.patch(
         `/orcamentos/${id}`,
         { status: novoStatus },
@@ -82,9 +77,9 @@ function Admin() {
                 {orcamentos.map((orc) => (
                   <Fragment key={orc.id}>
                     <tr>
-                      <td>{orc.nome_cliente}</td>
-                      <td>{orc.email_cliente}</td>
-                      <td>{orc.telefone_cliente}</td>
+                      <td>{orc.clientes?.nome}</td>
+                      <td>{orc.clientes?.email}</td>
+                      <td>{orc.clientes?.telefone}</td>
                       <td>
                         <ul className="admin-lista-produtos">
                           {orc.orcamento_itens?.map((item, idx) => (

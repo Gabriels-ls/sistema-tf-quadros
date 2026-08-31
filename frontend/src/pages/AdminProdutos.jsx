@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
-import { supabase } from '../services/supabaseClient';
+import { obterTokenAdmin } from '../services/adminAuth';
 import HeaderAdmin from '../components/HeaderAdmin';
 import './AdminProdutos.css';
 
@@ -23,11 +23,6 @@ function AdminProdutos() {
   const [salvandoVariacao, setSalvandoVariacao] = useState(false);
 
   const produtoEmEdicao = produtos.find((p) => p.id === editandoId);
-
-  async function obterToken() {
-    const { data } = await supabase.auth.getSession();
-    return data.session?.access_token;
-  }
 
   async function carregarProdutos() {
     try {
@@ -84,7 +79,7 @@ function limparFormulario() {
     setSalvandoVariacao(true);
 
     try {
-      const token = await obterToken();
+      const token = obterTokenAdmin();
       const dados = { nome: nomeVariacao, preco: precoVariacao };
 
       if (editandoVariacaoId) {
@@ -112,7 +107,7 @@ function limparFormulario() {
     if (!confirmar) return;
 
     try {
-      const token = await obterToken();
+      const token = obterTokenAdmin();
       await api.delete(`/produtos/${editandoId}/variacoes/${variacaoId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -128,7 +123,7 @@ function limparFormulario() {
     setSalvando(true);
 
     try {
-      const token = await obterToken();
+      const token = obterTokenAdmin();
       const dados = { nome, descricao, preco, imagem_url: imagemUrl };
 
       if (editandoId) {
@@ -156,7 +151,7 @@ function limparFormulario() {
     if (!confirmar) return;
 
     try {
-      const token = await obterToken();
+      const token = obterTokenAdmin();
       await api.delete(`/produtos/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });

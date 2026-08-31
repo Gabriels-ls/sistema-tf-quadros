@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../services/supabaseClient';
+import api from '../services/api';
+import { salvarTokenAdmin } from '../services/adminAuth';
 import './LoginAdmin.css';
 
 function LoginAdmin() {
@@ -15,19 +16,15 @@ function LoginAdmin() {
     setErro(null);
     setEntrando(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password: senha,
-    });
-
-    setEntrando(false);
-
-    if (error) {
+    try {
+      const resposta = await api.post('/admin/login', { email, senha });
+      salvarTokenAdmin(resposta.data.token);
+      navigate('/admin');
+    } catch {
       setErro('E-mail ou senha inválidos.');
-      return;
+    } finally {
+      setEntrando(false);
     }
-
-    navigate('/admin');
   }
 
   return (

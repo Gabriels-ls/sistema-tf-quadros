@@ -1,12 +1,12 @@
 import { useNavigate, Link } from 'react-router-dom';
-import { supabase } from '../services/supabaseClient';
+import { limparTokenAdmin } from '../services/adminAuth';
 import './HeaderAdmin.css';
 
 function HeaderAdmin() {
   const navigate = useNavigate();
 
-  async function handleLogout() {
-    await supabase.auth.signOut();
+  function handleLogout() {
+    limparTokenAdmin();
     navigate('/login');
   }
 

@@ -49,9 +49,19 @@ async function criarOrcamento(req, res) {
   const mensagens = mensagensValidas(historicoConversa);
   const resumoConversa = mensagens.length > 0 ? await gerarResumoConversa(mensagens) : null;
 
+  const { data: cliente, error: erroCliente } = await supabase
+    .from('clientes')
+    .insert([{ nome: nome_cliente, email: email_cliente, telefone: telefone_cliente, token }])
+    .select()
+    .single();
+
+  if (erroCliente) {
+    return res.status(500).json({ erro: erroCliente.message });
+  }
+
   const { data: orcamento, error: erroOrcamento } = await supabase
     .from('orcamentos')
-    .insert([{ nome_cliente, email_cliente, telefone_cliente, token, status: 'pendente', resumo_conversa: resumoConversa }])
+    .insert([{ cliente_id: cliente.id, status: 'pendente', resumo_conversa: resumoConversa }])
     .select()
     .single();
 
@@ -133,8 +143,8 @@ async function listarOrcamentosPorToken(req, res) {
 
   const { data, error } = await supabase
     .from('orcamentos')
-    .select('*, orcamento_itens(quantidade, nome_produto, preco_produto, variacao_nome)')
-    .eq('token', token)
+    .select('*, clientes!inner(nome, email, telefone, token), orcamento_itens(quantidade, nome_produto, preco_produto, variacao_nome)')
+    .eq('clientes.token', token)
     .order('criado_em', { ascending: false });
 
   if (error) {
@@ -147,7 +157,7 @@ async function listarOrcamentosPorToken(req, res) {
 async function listarTodosOrcamentos(req, res) {
   const { data, error } = await supabase
     .from('orcamentos')
-    .select('*, orcamento_itens(quantidade, nome_produto, preco_produto, variacao_nome), historico_chatbot(ordem, remetente, mensagem)')
+    .select('*, clientes(nome, email, telefone), orcamento_itens(quantidade, nome_produto, preco_produto, variacao_nome), historico_chatbot(ordem, remetente, mensagem)')
     .order('criado_em', { ascending: false })
     .order('ordem', { foreignTable: 'historico_chatbot', ascending: true });
 
