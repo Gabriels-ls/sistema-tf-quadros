@@ -39,8 +39,11 @@ function ProdutoDetalhe() {
     carregarProduto();
   }, [id]);
 
-  const opcoesSelecionadas = (produto?.grupos_variacao ?? [])
-    .filter((grupo) => grupo.opcoes_variacao?.length > 0)
+  const gruposComOpcoes = (produto?.grupos_variacao ?? []).filter(
+    (grupo) => grupo.opcoes_variacao?.length > 0
+  );
+
+  const opcoesSelecionadas = gruposComOpcoes
     .map((grupo) => {
       const opcao = grupo.opcoes_variacao.find((o) => String(o.id) === selecoes[grupo.id]);
       return opcao && { id: opcao.id, nome: opcao.nome, preco_adicional: opcao.preco_adicional, grupo_nome: grupo.nome };
@@ -91,24 +94,26 @@ function ProdutoDetalhe() {
             <p className="produto-detalhe__preco">R$ {precoExibido}</p>
             <p className="produto-detalhe__descricao">{produto.descricao}</p>
 
-            {produto.grupos_variacao
-              ?.filter((grupo) => grupo.opcoes_variacao?.length > 0)
-              .map((grupo) => (
-                <div className="produto-detalhe__variacao" key={grupo.id}>
-                  <label htmlFor={`grupo-${grupo.id}`}>{grupo.nome}</label>
-                  <select
-                    id={`grupo-${grupo.id}`}
-                    value={selecoes[grupo.id] ?? ''}
-                    onChange={(e) => setSelecoes((atual) => ({ ...atual, [grupo.id]: e.target.value }))}
-                  >
-                    {grupo.opcoes_variacao.map((opcao) => (
-                      <option key={opcao.id} value={opcao.id}>
-                        {opcao.nome}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ))}
+            {gruposComOpcoes.length > 0 && (
+              <div className="produto-detalhe__variacoes">
+                {gruposComOpcoes.map((grupo) => (
+                  <div className="produto-detalhe__variacao" key={grupo.id}>
+                    <label htmlFor={`grupo-${grupo.id}`}>{grupo.nome}</label>
+                    <select
+                      id={`grupo-${grupo.id}`}
+                      value={selecoes[grupo.id] ?? ''}
+                      onChange={(e) => setSelecoes((atual) => ({ ...atual, [grupo.id]: e.target.value }))}
+                    >
+                      {grupo.opcoes_variacao.map((opcao) => (
+                        <option key={opcao.id} value={opcao.id}>
+                          {opcao.nome}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="produto-detalhe__quantidade">
               <label htmlFor="quantidade">Quantidade</label>

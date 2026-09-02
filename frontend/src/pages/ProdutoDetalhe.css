@@ -54,16 +54,26 @@
   margin-bottom: 28px;
 }
 
+.produto-detalhe__variacoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  max-width: 420px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: var(--color-paper);
+  border-radius: 6px;
+}
+
 .produto-detalhe__quantidade,
 .produto-detalhe__variacao {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-bottom: 24px;
-  max-width: 260px;
 }
 
 .produto-detalhe__quantidade {
+  margin-bottom: 24px;
   max-width: 120px;
 }
 

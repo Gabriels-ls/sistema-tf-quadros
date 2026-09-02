@@ -173,14 +173,6 @@ function limparFormulario() {
     <div>
       <HeaderAdmin />
       <div className="container admin-produtos">
-        {!mostrarFormulario && (
-          <div className="admin-produtos__acao-nova">
-            <button onClick={() => setMostrarFormulario(true)} className="btn-primario">
-              Adicionar produto
-            </button>
-          </div>
-        )}
-
         {mostrarFormulario && (
           <div className="admin-produtos__form-box">
             <h2 className="admin-produtos__subtitulo">
@@ -195,29 +187,6 @@ function limparFormulario() {
                 <label>Descrição</label>
                 <input value={descricao} onChange={(e) => setDescricao(e.target.value)} required />
               </div>
-              <div className="campo campo--toggle">
-                <label className="admin-produtos__toggle">
-                  <input
-                    type="checkbox"
-                    checked={usaVariacoes}
-                    onChange={(e) => setUsaVariacoes(e.target.checked)}
-                  />
-                  <span className="admin-produtos__toggle-slider" />
-                </label>
-                <span>Produto com variações (ex: material, acabamento)</span>
-              </div>
-
-              {!usaVariacoes && (
-                <div className="campo">
-                  <label>Preço</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={preco}
-                    onChange={(e) => setPreco(e.target.value)}
-                  />
-                </div>
-              )}
               <div className="campo">
                 <label>Imagem</label>
                 {imagemUrl && (
@@ -240,6 +209,30 @@ function limparFormulario() {
                   {enviandoImagem ? 'Enviando...' : imagemUrl ? 'Trocar imagem' : 'Escolher imagem'}
                 </button>
               </div>
+
+              <div className="admin-produtos__secao-preco">
+                <label className="admin-produtos__toggle">
+                  <input
+                    type="checkbox"
+                    checked={usaVariacoes}
+                    onChange={(e) => setUsaVariacoes(e.target.checked)}
+                  />
+                  <span className="admin-produtos__toggle-slider" />
+                </label>
+                <strong>Produto com variações</strong>
+              </div>
+
+              {!usaVariacoes && (
+                <div className="campo">
+                  <label>Preço</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={preco}
+                    onChange={(e) => setPreco(e.target.value)}
+                  />
+                </div>
+              )}
 
               {usaVariacoes && (
                 <div className="admin-produtos__variacoes">
@@ -264,7 +257,19 @@ function limparFormulario() {
           </div>
         )}
 
-        <h1 className="admin-titulo">Produtos cadastrados</h1>
+        <div className="admin-produtos__cabecalho-lista">
+          <h1 className="admin-titulo">Produtos cadastrados</h1>
+          {!mostrarFormulario && (
+            <button
+              onClick={() => setMostrarFormulario(true)}
+              className="admin-produtos__btn-novo"
+              aria-label="Adicionar produto"
+              title="Adicionar produto"
+            >
+              +
+            </button>
+          )}
+        </div>
 
         {carregando && <p>Carregando produtos...</p>}
         {erro && <p>{erro}</p>}
