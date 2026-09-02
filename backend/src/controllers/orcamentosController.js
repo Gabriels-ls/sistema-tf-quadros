@@ -80,32 +80,37 @@ async function criarOrcamento(req, res) {
     return res.status(500).json({ erro: erroProdutos.message });
   }
 
-  const idsVariacoes = itens.map((item) => item.variacao_id).filter(Boolean);
-  let variacoes = [];
-  if (idsVariacoes.length > 0) {
-    const { data: dadosVariacoes, error: erroVariacoes } = await supabase
-      .from('produto_variacoes')
-      .select('id, nome, preco')
-      .in('id', idsVariacoes);
+  const idsOpcoes = itens.flatMap((item) => item.opcoes_selecionadas || []).filter(Boolean);
+  let opcoes = [];
+  if (idsOpcoes.length > 0) {
+    const { data: dadosOpcoes, error: erroOpcoes } = await supabase
+      .from('opcoes_variacao')
+      .select('id, nome, preco_adicional, grupos_variacao(nome)')
+      .in('id', idsOpcoes);
 
-    if (erroVariacoes) {
-      return res.status(500).json({ erro: erroVariacoes.message });
+    if (erroOpcoes) {
+      return res.status(500).json({ erro: erroOpcoes.message });
     }
-    variacoes = dadosVariacoes;
+    opcoes = dadosOpcoes;
   }
 
   const itensParaInserir = itens.map((item) => {
     const produto = produtos.find((p) => p.id === Number(item.produto_id));
-    const variacao = item.variacao_id
-      ? variacoes.find((v) => v.id === Number(item.variacao_id))
+    const opcoesDoItem = (item.opcoes_selecionadas || [])
+      .map((id) => opcoes.find((o) => o.id === Number(id)))
+      .filter(Boolean);
+    const somaAdicionais = opcoesDoItem.reduce((soma, o) => soma + Number(o.preco_adicional), 0);
+    const variacaoNome = opcoesDoItem.length > 0
+      ? opcoesDoItem.map((o) => `${o.grupos_variacao?.nome}: ${o.nome}`).join(', ')
       : null;
+
     return {
       orcamento_id: orcamento.id,
       produto_id: item.produto_id,
       quantidade: item.quantidade,
       nome_produto: produto?.nome || 'Produto removido',
-      preco_produto: variacao?.preco ?? produto?.preco ?? null,
-      variacao_nome: variacao?.nome || null,
+      preco_produto: produto ? Number(produto.preco) + somaAdicionais : null,
+      variacao_nome: variacaoNome,
     };
   });
 

@@ -11,7 +11,7 @@ function ProdutoDetalhe() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
   const [quantidade, setQuantidade] = useState(1);
-  const [variacaoId, setVariacaoId] = useState('');
+  const [selecoes, setSelecoes] = useState({});
   const { adicionarItem } = useCarrinho();
   const navigate = useNavigate();
 
@@ -20,9 +20,14 @@ function ProdutoDetalhe() {
       try {
         const resposta = await api.get(`/produtos/${id}`);
         setProduto(resposta.data);
-        if (resposta.data.produto_variacoes?.length > 0) {
-          setVariacaoId(String(resposta.data.produto_variacoes[0].id));
-        }
+
+        const iniciais = {};
+        resposta.data.grupos_variacao?.forEach((grupo) => {
+          if (grupo.opcoes_variacao?.length > 0) {
+            iniciais[grupo.id] = String(grupo.opcoes_variacao[0].id);
+          }
+        });
+        setSelecoes(iniciais);
       } catch (err) {
         setErro('Produto não encontrado.');
         console.error(err);
@@ -34,13 +39,20 @@ function ProdutoDetalhe() {
     carregarProduto();
   }, [id]);
 
-  const variacaoSelecionada = produto?.produto_variacoes?.find(
-    (v) => String(v.id) === variacaoId
-  );
-  const precoExibido = variacaoSelecionada?.preco ?? produto?.preco;
+  const opcoesSelecionadas = (produto?.grupos_variacao ?? [])
+    .filter((grupo) => grupo.opcoes_variacao?.length > 0)
+    .map((grupo) => {
+      const opcao = grupo.opcoes_variacao.find((o) => String(o.id) === selecoes[grupo.id]);
+      return opcao && { id: opcao.id, nome: opcao.nome, preco_adicional: opcao.preco_adicional, grupo_nome: grupo.nome };
+    })
+    .filter(Boolean);
+
+  const precoExibido =
+    Number(produto?.preco ?? 0) +
+    opcoesSelecionadas.reduce((soma, o) => soma + Number(o.preco_adicional), 0);
 
   function handleAdicionar() {
-    adicionarItem(produto, Number(quantidade), variacaoSelecionada || null);
+    adicionarItem(produto, Number(quantidade), opcoesSelecionadas);
     navigate('/carrinho');
   }
 
@@ -79,22 +91,24 @@ function ProdutoDetalhe() {
             <p className="produto-detalhe__preco">R$ {precoExibido}</p>
             <p className="produto-detalhe__descricao">{produto.descricao}</p>
 
-            {produto.produto_variacoes?.length > 0 && (
-              <div className="produto-detalhe__variacao">
-                <label htmlFor="variacao">Variação</label>
-                <select
-                  id="variacao"
-                  value={variacaoId}
-                  onChange={(e) => setVariacaoId(e.target.value)}
-                >
-                  {produto.produto_variacoes.map((v) => (
-                    <option key={v.id} value={v.id}>
-                      {v.nome} — R$ {v.preco}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
+            {produto.grupos_variacao
+              ?.filter((grupo) => grupo.opcoes_variacao?.length > 0)
+              .map((grupo) => (
+                <div className="produto-detalhe__variacao" key={grupo.id}>
+                  <label htmlFor={`grupo-${grupo.id}`}>{grupo.nome}</label>
+                  <select
+                    id={`grupo-${grupo.id}`}
+                    value={selecoes[grupo.id] ?? ''}
+                    onChange={(e) => setSelecoes((atual) => ({ ...atual, [grupo.id]: e.target.value }))}
+                  >
+                    {grupo.opcoes_variacao.map((opcao) => (
+                      <option key={opcao.id} value={opcao.id}>
+                        {opcao.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
 
             <div className="produto-detalhe__quantidade">
               <label htmlFor="quantidade">Quantidade</label>

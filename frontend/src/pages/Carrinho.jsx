@@ -41,7 +41,7 @@ function Carrinho() {
         itens: itens.map((i) => ({
           produto_id: i.produto.id,
           quantidade: i.quantidade,
-          variacao_id: i.variacao?.id,
+          opcoes_selecionadas: i.opcoesSelecionadas.map((o) => o.id),
         })),
         historicoConversa,
       });
@@ -86,23 +86,28 @@ function Carrinho() {
         <h1 className="carrinho__titulo">Seu orçamento</h1>
 
         <ul className="carrinho__itens">
-          {itens.map((item) => (
-            <li key={`${item.produto.id}-${item.variacao?.id ?? 'base'}`} className="carrinho__item">
-              <div>
-                <strong>
-                  {item.produto.nome}
-                  {item.variacao ? ` - ${item.variacao.nome}` : ''}
-                </strong>
-                <span className="carrinho__item-qtd">Qtd: {item.quantidade}</span>
-              </div>
-              <button
-                onClick={() => removerItem(item.produto.id, item.variacao?.id ?? null)}
-                className="carrinho__remover"
-              >
-                Remover
-              </button>
-            </li>
-          ))}
+          {itens.map((item) => {
+            const chave = `${item.produto.id}-${item.opcoesSelecionadas.map((o) => o.id).join(',')}`;
+            return (
+              <li key={chave} className="carrinho__item">
+                <div>
+                  <strong>
+                    {item.produto.nome}
+                    {item.opcoesSelecionadas.length > 0
+                      ? ` - ${item.opcoesSelecionadas.map((o) => o.nome).join(', ')}`
+                      : ''}
+                  </strong>
+                  <span className="carrinho__item-qtd">Qtd: {item.quantidade}</span>
+                </div>
+                <button
+                  onClick={() => removerItem(item.produto.id, item.opcoesSelecionadas)}
+                  className="carrinho__remover"
+                >
+                  Remover
+                </button>
+              </li>
+            );
+          })}
         </ul>
 
         <div className="carrinho__form-box">

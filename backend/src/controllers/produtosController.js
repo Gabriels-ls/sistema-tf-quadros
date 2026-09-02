@@ -1,15 +1,46 @@
+const { randomUUID } = require('crypto');
 const supabase = require('../services/supabaseClient');
 
-async function listarProdutos(req, res) {
-  const { data, error } = await supabase
-    .from('produtos')
-    .select('*, produto_variacoes(id, nome, preco)');
+const BUCKET_IMAGENS = 'produtos-imagens';
+
+async function uploadImagem(req, res) {
+  if (!req.file) {
+    return res.status(400).json({ erro: 'Nenhum arquivo enviado.' });
+  }
+
+  const extensao = req.file.originalname.split('.').pop();
+  const caminho = `${randomUUID()}.${extensao}`;
+
+  const { error } = await supabase.storage
+    .from(BUCKET_IMAGENS)
+    .upload(caminho, req.file.buffer, { contentType: req.file.mimetype });
 
   if (error) {
     return res.status(500).json({ erro: error.message });
   }
 
-  res.json(data);
+  const { data } = supabase.storage.from(BUCKET_IMAGENS).getPublicUrl(caminho);
+
+  res.status(201).json({ imagem_url: data.publicUrl });
+}
+
+const SELECT_COM_GRUPOS = '*, grupos_variacao(id, nome, opcoes_variacao(id, nome, preco_adicional))';
+
+function ordenarGruposEOpcoes(produto) {
+  produto.grupos_variacao
+    ?.sort((a, b) => a.id - b.id)
+    .forEach((grupo) => grupo.opcoes_variacao?.sort((a, b) => a.id - b.id));
+  return produto;
+}
+
+async function listarProdutos(req, res) {
+  const { data, error } = await supabase.from('produtos').select(SELECT_COM_GRUPOS);
+
+  if (error) {
+    return res.status(500).json({ erro: error.message });
+  }
+
+  res.json(data.map(ordenarGruposEOpcoes));
 }
 
 async function buscarProdutoPorId(req, res) {
@@ -17,7 +48,7 @@ async function buscarProdutoPorId(req, res) {
 
   const { data, error } = await supabase
     .from('produtos')
-    .select('*, produto_variacoes(id, nome, preco)')
+    .select(SELECT_COM_GRUPOS)
     .eq('id', id)
     .single();
 
@@ -25,7 +56,7 @@ async function buscarProdutoPorId(req, res) {
     return res.status(404).json({ erro: 'Produto não encontrado.' });
   }
 
-  res.json(data);
+  res.json(ordenarGruposEOpcoes(data));
 }
 
 async function criarProduto(req, res) {
@@ -81,17 +112,17 @@ async function excluirProduto(req, res) {
   res.status(204).send();
 }
 
-async function criarVariacao(req, res) {
+async function criarGrupoVariacao(req, res) {
   const { produtoId } = req.params;
-  const { nome, preco } = req.body;
+  const { nome } = req.body;
 
-  if (!nome || preco === undefined || preco === null) {
-    return res.status(400).json({ erro: 'Nome e preço da variação são obrigatórios.' });
+  if (!nome) {
+    return res.status(400).json({ erro: 'Nome do grupo é obrigatório.' });
   }
 
   const { data, error } = await supabase
-    .from('produto_variacoes')
-    .insert([{ produto_id: produtoId, nome, preco }])
+    .from('grupos_variacao')
+    .insert([{ produto_id: produtoId, nome }])
     .select()
     .single();
 
@@ -102,14 +133,18 @@ async function criarVariacao(req, res) {
   res.status(201).json(data);
 }
 
-async function editarVariacao(req, res) {
-  const { variacaoId } = req.params;
-  const { nome, preco } = req.body;
+async function editarGrupoVariacao(req, res) {
+  const { grupoId } = req.params;
+  const { nome } = req.body;
+
+  if (!nome) {
+    return res.status(400).json({ erro: 'Nome do grupo é obrigatório.' });
+  }
 
   const { data, error } = await supabase
-    .from('produto_variacoes')
-    .update({ nome, preco })
-    .eq('id', variacaoId)
+    .from('grupos_variacao')
+    .update({ nome })
+    .eq('id', grupoId)
     .select()
     .single();
 
@@ -120,13 +155,13 @@ async function editarVariacao(req, res) {
   res.json(data);
 }
 
-async function excluirVariacao(req, res) {
-  const { variacaoId } = req.params;
+async function excluirGrupoVariacao(req, res) {
+  const { grupoId } = req.params;
 
   const { error } = await supabase
-    .from('produto_variacoes')
+    .from('grupos_variacao')
     .delete()
-    .eq('id', variacaoId);
+    .eq('id', grupoId);
 
   if (error) {
     return res.status(500).json({ erro: error.message });
@@ -141,7 +176,8 @@ module.exports = {
   criarProduto,
   editarProduto,
   excluirProduto,
-  criarVariacao,
-  editarVariacao,
-  excluirVariacao,
+  criarGrupoVariacao,
+  editarGrupoVariacao,
+  excluirGrupoVariacao,
+  uploadImagem,
 };

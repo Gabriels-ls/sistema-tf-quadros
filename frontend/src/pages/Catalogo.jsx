@@ -40,18 +40,31 @@ function Catalogo() {
 
         {!carregando && !erro && (
           <div className="catalogo-grid">
-            {produtos.map((produto) => (
-              <Link to={`/produtos/${produto.id}`} key={produto.id} className="produto-card">
-                <div className="produto-card__imagem">
-                  <img src={produto.imagem_url} alt={produto.nome} />
-                </div>
-                <div className="produto-card__info">
-                  <h2 className="produto-card__nome">{produto.nome}</h2>
-                  <p className="produto-card__descricao">{produto.descricao}</p>
-                  <span className="produto-card__preco">R$ {produto.preco}</span>
-                </div>
-              </Link>
-            ))}
+            {produtos.map((produto) => {
+              const temVariacoes = produto.grupos_variacao?.length > 0;
+              const preco = temVariacoes
+                ? Number(produto.preco ?? 0) +
+                  produto.grupos_variacao.reduce((soma, grupo) => {
+                    if (!grupo.opcoes_variacao?.length) return soma;
+                    return soma + Math.min(...grupo.opcoes_variacao.map((o) => Number(o.preco_adicional)));
+                  }, 0)
+                : produto.preco;
+
+              return (
+                <Link to={`/produtos/${produto.id}`} key={produto.id} className="produto-card">
+                  <div className="produto-card__imagem">
+                    <img src={produto.imagem_url} alt={produto.nome} />
+                  </div>
+                  <div className="produto-card__info">
+                    <h2 className="produto-card__nome">{produto.nome}</h2>
+                    <p className="produto-card__descricao">{produto.descricao}</p>
+                    <span className="produto-card__preco">
+                      {temVariacoes ? 'A partir de ' : ''}R$ {preco}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </section>

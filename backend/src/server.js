@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const produtosRoutes = require('./routes/produtosRoutes');
+const opcoesVariacaoRoutes = require('./routes/opcoesVariacaoRoutes');
 const orcamentosRoutes = require('./routes/orcamentosRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
@@ -14,6 +15,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/produtos', produtosRoutes);
+app.use('/grupos-variacao', opcoesVariacaoRoutes);
 
 app.use('/orcamentos', orcamentosRoutes);
 app.use('/admin', adminRoutes);
