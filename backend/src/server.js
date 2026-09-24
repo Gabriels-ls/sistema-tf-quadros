@@ -1,29 +1,7 @@
 require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const produtosRoutes = require('./routes/produtosRoutes');
-const opcoesVariacaoRoutes = require('./routes/opcoesVariacaoRoutes');
-const orcamentosRoutes = require('./routes/orcamentosRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-app.get('/', (req, res) => {
-  res.send('Servidor TF Quadros rodando!');
-});
-
-app.use('/produtos', produtosRoutes);
-app.use('/grupos-variacao', opcoesVariacaoRoutes);
-
-app.use('/orcamentos', orcamentosRoutes);
-app.use('/admin', adminRoutes);
+const app = require('./app');
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
-
-const chatbotRoutes = require('./routes/chatbotRoutes');
-app.use('/chatbot', chatbotRoutes);

@@ -1,0 +1,332 @@
+{
+  "info": {
+    "name": "TF Quadros - API REST",
+    "description": "Coleção usada nos testes de caixa-preta da API do sistema TF Quadros. Defina as variáveis baseUrl, emailAdmin e senhaAdmin antes de executar. A requisição de login grava o token JWT na variável token.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3001" },
+    { "key": "emailAdmin", "value": "admin@tfquadros.com" },
+    { "key": "senhaAdmin", "value": "" },
+    { "key": "token", "value": "" },
+    { "key": "tokenCliente", "value": "teste-postman-001" },
+    { "key": "produtoId", "value": "1" },
+    { "key": "orcamentoId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Login do administrador (RN01)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "pm.test('devolve token', () => pm.expect(pm.response.json().token).to.be.a('string'));",
+              "pm.collectionVariables.set('token', pm.response.json().token);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/admin/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{emailAdmin}}\",\n  \"senha\": \"{{senhaAdmin}}\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Login com senha incorreta",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test('status 401', () => pm.response.to.have.status(401));"]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/admin/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{emailAdmin}}\",\n  \"senha\": \"senha-invalida\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Listar catálogo de produtos (RF01)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "pm.test('devolve uma lista', () => pm.expect(pm.response.json()).to.be.an('array'));"
+            ]
+          }
+        }
+      ],
+      "request": { "method": "GET", "url": "{{baseUrl}}/produtos" }
+    },
+    {
+      "name": "Consultar detalhes do produto (RF02)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test('status 200', () => pm.response.to.have.status(200));"]
+          }
+        }
+      ],
+      "request": { "method": "GET", "url": "{{baseUrl}}/produtos/{{produtoId}}" }
+    },
+    {
+      "name": "Cadastrar produto sem token (RN01)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 401', () => pm.response.to.have.status(401));",
+              "pm.test('mensagem de token ausente', () => pm.expect(pm.response.json().erro).to.include('Token'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/produtos",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Quadro de teste\",\n  \"descricao\": \"Cadastro sem autenticação\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Cadastrar produto sem descrição (RN03)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test('status 400', () => pm.response.to.have.status(400));"]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": "{{baseUrl}}/produtos",
+        "body": { "mode": "raw", "raw": "{\n  \"nome\": \"Quadro sem descrição\"\n}" }
+      }
+    },
+    {
+      "name": "Conversar com o chatbot (RF03)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "pm.test('devolve resposta do assistente', () => pm.expect(pm.response.json().resposta).to.be.a('string'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/chatbot",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"mensagem\": \"Vocês fazem quadros sob medida?\",\n  \"token\": \"{{tokenCliente}}\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Chatbot com mensagem acima do limite (RNF19)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 400', () => pm.response.to.have.status(400));",
+              "pm.test('informa o limite de caracteres', () => pm.expect(pm.response.json().erro).to.include('500'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/chatbot",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"mensagem\": \"{{$randomLoremParagraphs}}{{$randomLoremParagraphs}}{{$randomLoremParagraphs}}\",\n  \"token\": \"{{tokenCliente}}\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Solicitar orçamento (RF04)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('orcamentoId', pm.response.json().id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/orcamentos",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome_cliente\": \"Cliente de teste\",\n  \"email_cliente\": \"cliente@exemplo.com\",\n  \"telefone_cliente\": \"47999999999\",\n  \"token\": \"{{tokenCliente}}\",\n  \"itens\": [\n    { \"produto_id\": {{produtoId}}, \"quantidade\": 2, \"opcoes_selecionadas\": [] }\n  ],\n  \"historicoConversa\": [\n    { \"remetente\": \"cliente\", \"mensagem\": \"Vocês fazem quadro 30x40?\" },\n    { \"remetente\": \"assistente\", \"mensagem\": \"Sim, fabricamos sob medida.\" }\n  ]\n}"
+        }
+      }
+    },
+    {
+      "name": "Solicitar orçamento sem itens",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test('status 400', () => pm.response.to.have.status(400));"]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/orcamentos",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome_cliente\": \"Cliente de teste\",\n  \"email_cliente\": \"cliente@exemplo.com\",\n  \"token\": \"{{tokenCliente}}\",\n  \"itens\": []\n}"
+        }
+      }
+    },
+    {
+      "name": "Consultar solicitações do cliente pelo token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "pm.test('um único cadastro de cliente por token', () => {",
+              "  const nomes = pm.response.json().map((o) => o.clientes.token);",
+              "  pm.expect(new Set(nomes).size).to.be.below(2);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": { "method": "GET", "url": "{{baseUrl}}/orcamentos/token/{{tokenCliente}}" }
+    },
+    {
+      "name": "Listar solicitações sem token (RN01)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test('status 401', () => pm.response.to.have.status(401));"]
+          }
+        }
+      ],
+      "request": { "method": "GET", "url": "{{baseUrl}}/orcamentos" }
+    },
+    {
+      "name": "Listar solicitações como administrador (RF09, RF11, RF12)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "pm.test('traz histórico e resumo do chatbot', () => {",
+              "  const orcamento = pm.response.json().find((o) => o.id === Number(pm.collectionVariables.get('orcamentoId')));",
+              "  pm.expect(orcamento).to.not.be.undefined;",
+              "  pm.expect(orcamento.historico_chatbot).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{baseUrl}}/orcamentos"
+      }
+    },
+    {
+      "name": "Atualizar status com valor inválido (RN04)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test('status 400', () => pm.response.to.have.status(400));"]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": "{{baseUrl}}/orcamentos/{{orcamentoId}}",
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"finalizado\"\n}" }
+      }
+    },
+    {
+      "name": "Atualizar status para em andamento (RF10, RN04)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "pm.test('status atualizado', () => pm.expect(pm.response.json().status).to.eql('em andamento'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": "{{baseUrl}}/orcamentos/{{orcamentoId}}",
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"em andamento\"\n}" }
+      }
+    }
+  ]
+}

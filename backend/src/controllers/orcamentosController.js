@@ -39,6 +39,52 @@ async function gerarResumoConversa(mensagens) {
   }
 }
 
+// Um mesmo navegador (token) deve ter um único cadastro em clientes, para que as
+// solicitações de orçamento fiquem vinculadas ao mesmo cliente. Se já existir um
+// cadastro para o token, os dados informados agora atualizam o registro existente.
+async function obterOuCriarCliente({ nome, email, telefone, token }) {
+  if (token) {
+    const { data: existente, error: erroBusca } = await supabase
+      .from('clientes')
+      .select('id')
+      .eq('token', token)
+      .order('id', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (erroBusca) {
+      return { erro: erroBusca.message };
+    }
+
+    if (existente) {
+      const { data: atualizado, error: erroUpdate } = await supabase
+        .from('clientes')
+        .update({ nome, email, telefone })
+        .eq('id', existente.id)
+        .select()
+        .single();
+
+      if (erroUpdate) {
+        return { erro: erroUpdate.message };
+      }
+
+      return atualizado;
+    }
+  }
+
+  const { data: novo, error: erroInsert } = await supabase
+    .from('clientes')
+    .insert([{ nome, email, telefone, token }])
+    .select()
+    .single();
+
+  if (erroInsert) {
+    return { erro: erroInsert.message };
+  }
+
+  return novo;
+}
+
 async function criarOrcamento(req, res) {
   const { nome_cliente, email_cliente, telefone_cliente, token, itens, historicoConversa } = req.body;
 
@@ -49,14 +95,15 @@ async function criarOrcamento(req, res) {
   const mensagens = mensagensValidas(historicoConversa);
   const resumoConversa = mensagens.length > 0 ? await gerarResumoConversa(mensagens) : null;
 
-  const { data: cliente, error: erroCliente } = await supabase
-    .from('clientes')
-    .insert([{ nome: nome_cliente, email: email_cliente, telefone: telefone_cliente, token }])
-    .select()
-    .single();
+  const cliente = await obterOuCriarCliente({
+    nome: nome_cliente,
+    email: email_cliente,
+    telefone: telefone_cliente,
+    token,
+  });
 
-  if (erroCliente) {
-    return res.status(500).json({ erro: erroCliente.message });
+  if (cliente.erro) {
+    return res.status(500).json({ erro: cliente.erro });
   }
 
   const { data: orcamento, error: erroOrcamento } = await supabase
