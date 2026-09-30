@@ -29,7 +29,7 @@ function Catalogo() {
     <Layout>
       <section className="catalogo-header">
         <div className="container">
-          <span className="eyebrow" style={{ color: 'var(--color-accent)' }}>Catálogo</span>
+          <span className="eyebrow" style={{ color: 'var(--color-primary-light)' }}>Catálogo</span>
           <h1 className="catalogo-header__titulo">Nossos quadros</h1>
         </div>
       </section>

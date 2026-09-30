@@ -40,7 +40,7 @@
 }
 
 .carrinho__remover:hover {
-  color: var(--color-accent-dark);
+  color: var(--color-primary-dark);
 }
 
 .carrinho__form-box {

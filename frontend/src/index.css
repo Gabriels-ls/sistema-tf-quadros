@@ -1,13 +1,14 @@
 :root {
   --color-primary: #2A5FCC;
   --color-primary-dark: #1B3F8C;
-  --color-ink: #14171B;
-  --color-steel: #5B6470;
-  --color-steel-light: #A9B0B8;
-  --color-paper: #F3F4F6;
+  --color-primary-light: #8DB4FF;
+  --color-primary-soft: #E8EFFC;
+  --color-navy: #0D1F3F;
+  --color-ink: #111A2C;
+  --color-steel: #56627A;
+  --color-steel-light: #A7B3CB;
+  --color-paper: #F2F5FA;
   --color-white: #FFFFFF;
-  --color-accent: #E8871E;
-  --color-accent-dark: #C46F14;
 
   --font-display: 'Oswald', sans-serif;
   --font-body: 'IBM Plex Sans', sans-serif;
@@ -50,7 +51,7 @@ button {
 
 .btn-primario {
   display: inline-block;
-  background-color: var(--color-accent);
+  background-color: var(--color-primary);
   color: var(--color-white);
   font-family: var(--font-display);
   text-transform: uppercase;
@@ -63,7 +64,7 @@ button {
 }
 
 .btn-primario:hover {
-  background-color: var(--color-accent-dark);
+  background-color: var(--color-primary-dark);
 }
 
 .btn-secundario {

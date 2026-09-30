@@ -75,7 +75,7 @@
   height: 36px;
   border-radius: 50%;
   border: none;
-  background-color: var(--color-accent);
+  background-color: var(--color-primary);
   color: var(--color-white);
   font-size: 20px;
   line-height: 1;
@@ -86,7 +86,7 @@
 }
 
 .admin-produtos__btn-novo:hover {
-  background-color: var(--color-accent-dark);
+  background-color: var(--color-primary-dark);
 }
 
 .admin-produtos__variacoes {

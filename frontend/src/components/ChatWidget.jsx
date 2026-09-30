@@ -55,7 +55,7 @@ function ChatWidget() {
         >
           <div
             style={{
-              backgroundColor: '#222',
+              backgroundColor: 'var(--color-navy)',
               color: '#fff',
               padding: '12px',
               display: 'flex',
@@ -86,7 +86,7 @@ function ChatWidget() {
                     display: 'inline-block',
                     padding: '8px 12px',
                     borderRadius: '12px',
-                    backgroundColor: msg.autor === 'usuario' ? '#0084ff' : '#e4e6eb',
+                    backgroundColor: msg.autor === 'usuario' ? 'var(--color-primary)' : '#e4e6eb',
                     color: msg.autor === 'usuario' ? '#fff' : '#000',
                     maxWidth: '80%',
                   }}
@@ -111,7 +111,7 @@ function ChatWidget() {
               style={{ flex: 1, border: 'none', padding: '10px', outline: 'none' }}
               disabled={enviando}
             />
-            <button type="submit" disabled={enviando} style={{ padding: '0 16px', border: 'none', background: '#0084ff', color: '#fff' }}>
+            <button type="submit" disabled={enviando} style={{ padding: '0 16px', border: 'none', background: 'var(--color-primary)', color: '#fff' }}>
               Enviar
             </button>
           </form>
@@ -125,7 +125,7 @@ function ChatWidget() {
             width: '56px',
             height: '56px',
             borderRadius: '50%',
-            backgroundColor: '#0084ff',
+            backgroundColor: 'var(--color-primary)',
             color: '#fff',
             border: 'none',
             fontSize: '24px',
