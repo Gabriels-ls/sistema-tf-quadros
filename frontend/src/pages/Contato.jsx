@@ -15,11 +15,11 @@ function Contato() {
         <div className="contato-info">
           <div className="contato-item">
             <span className="eyebrow">E-mail</span>
-            <p>contato@tfquadros.com</p>
+            <p>tfquadros@terra.com.br</p>
           </div>
           <div className="contato-item">
             <span className="eyebrow">Telefone</span>
-            <p>(00) 00000-0000</p>
+            <p>(47) 3332-2923</p>
           </div>
           <div className="contato-item">
             <span className="eyebrow">Endereço</span>
