@@ -15,9 +15,11 @@ function HeaderAdmin() {
       <div className="container header-admin__conteudo">
         <div>
           <strong className="header-admin__marca">TF QUADROS — ADMIN</strong>
-          <nav className="header-admin__nav">
-            <Link to="/admin">Orçamentos</Link>
-            <Link to="/admin/produtos">Produtos</Link>
+          <nav id="menu" className="header-admin__nav" aria-label="Menu da área administrativa">
+            <ul className="header-admin__menu">
+              <li><Link to="/admin">Orçamentos</Link></li>
+              <li><Link to="/admin/produtos">Produtos</Link></li>
+            </ul>
           </nav>
         </div>
         <button onClick={handleLogout} className="header-admin__sair">Sair</button>

@@ -1,0 +1,27 @@
+.rodape {
+  background-color: var(--color-navy);
+  color: var(--color-steel-light);
+  padding: 32px 0;
+  margin-top: 60px;
+}
+
+.rodape__conteudo {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.rodape__marca {
+  color: var(--color-white);
+  font-family: var(--font-display);
+}
+
+.rodape__texto {
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.rodape__contato {
+  font-size: 13px;
+}

@@ -7,7 +7,7 @@ function Home() {
     <Layout>
       <section className="hero">
         <div className="container hero__conteudo">
-          <span className="eyebrow" style={{ color: 'var(--color-primary-light)' }}>Fabricação sob medida</span>
+          <span className="eyebrow eyebrow--clara">Fabricação sob medida</span>
           <h1 className="hero__titulo">Quadros de serigrafia feitos para durar</h1>
           <p className="hero__texto">
             Estrutura resistente, medidas precisas e acabamento profissional para quem vive de estampar.

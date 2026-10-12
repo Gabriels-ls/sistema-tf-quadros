@@ -21,6 +21,10 @@
   gap: 14px;
 }
 
+.admin-produtos__campos {
+  gap: 14px;
+}
+
 .admin-produtos__acoes-form {
   display: flex;
   gap: 12px;

@@ -35,6 +35,10 @@
   gap: 16px;
 }
 
+.login-campos {
+  gap: 16px;
+}
+
 .login-erro {
   color: #C62828;
   font-size: 13px;

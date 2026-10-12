@@ -6,7 +6,7 @@ function Contato() {
     <Layout>
       <section className="contato-header">
         <div className="container">
-          <span className="eyebrow" style={{ color: 'var(--color-primary-light)' }}>Contato</span>
+          <span className="eyebrow eyebrow--clara">Contato</span>
           <h1 className="contato-header__titulo">Fale com a gente</h1>
         </div>
       </section>

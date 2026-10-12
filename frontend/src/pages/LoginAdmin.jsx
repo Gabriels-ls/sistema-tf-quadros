@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { salvarTokenAdmin } from '../services/adminAuth';
+import Atalhos from '../components/Atalhos';
 import './LoginAdmin.css';
 
 function LoginAdmin() {
@@ -29,29 +30,35 @@ function LoginAdmin() {
 
   return (
     <div className="login-pagina">
-      <div className="login-caixa">
+      <Atalhos itens={['conteudo']} />
+      <main id="conteudo" className="login-caixa">
         <span className="login-marca">TF QUADROS</span>
         <h1 className="login-titulo">Acesso administrativo</h1>
 
         <form onSubmit={handleLogin} className="login-form">
-          <div className="campo">
-            <label>E-mail</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="campo">
-            <label>Senha</label>
-            <input
-              type="password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              required
-            />
-          </div>
+          <fieldset className="grupo-campos login-campos">
+            <legend className="sr-only">Dados de acesso</legend>
+            <div className="campo">
+              <label htmlFor="login-email">E-mail</label>
+              <input
+                id="login-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="campo">
+              <label htmlFor="login-senha">Senha</label>
+              <input
+                id="login-senha"
+                type="password"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                required
+              />
+            </div>
+          </fieldset>
 
           {erro && <p className="login-erro">{erro}</p>}
 
@@ -59,7 +66,7 @@ function LoginAdmin() {
             {entrando ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
-      </div>
+      </main>
     </div>
   );
 }

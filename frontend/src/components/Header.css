@@ -16,12 +16,16 @@
   letter-spacing: 0.05em;
 }
 
-.header__nav {
+.header__menu {
   display: flex;
   gap: 28px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .header__nav a {
+  display: block;
   color: var(--color-steel-light);
   font-family: var(--font-display);
   text-transform: uppercase;
@@ -35,7 +39,7 @@
 }
 
 @media (max-width: 640px) {
-  .header__nav {
+  .header__menu {
     gap: 16px;
   }
   .header__nav a {

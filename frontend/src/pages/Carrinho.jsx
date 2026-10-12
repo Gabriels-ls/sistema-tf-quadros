@@ -60,11 +60,11 @@ function Carrinho() {
   if (sucesso) {
     return (
       <Layout>
-        <div className="container carrinho-status">
+        <section className="container carrinho-status">
           <h1>Solicitação enviada!</h1>
           <p>Em breve entraremos em contato.</p>
           <Link to="/produtos" className="btn-primario">Voltar ao catálogo</Link>
-        </div>
+        </section>
       </Layout>
     );
   }
@@ -72,17 +72,17 @@ function Carrinho() {
   if (itens.length === 0) {
     return (
       <Layout>
-        <div className="container carrinho-status">
+        <section className="container carrinho-status">
           <h1>Seu orçamento está vazio</h1>
           <Link to="/produtos" className="btn-primario">Ver catálogo</Link>
-        </div>
+        </section>
       </Layout>
     );
   }
 
   return (
     <Layout>
-      <div className="container carrinho">
+      <section className="container carrinho">
         <h1 className="carrinho__titulo">Seu orçamento</h1>
 
         <ul className="carrinho__itens">
@@ -113,24 +113,33 @@ function Carrinho() {
         <div className="carrinho__form-box">
           <h2 className="carrinho__subtitulo">Seus dados</h2>
           <form onSubmit={handleEnviar} className="carrinho__form">
-            <div className="campo">
-              <label>Nome</label>
-              <input value={nome} onChange={(e) => setNome(e.target.value)} required />
-            </div>
-            <div className="campo">
-              <label>E-mail</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </div>
-            <div className="campo">
-              <label>Telefone</label>
-              <input value={telefone} onChange={(e) => setTelefone(e.target.value)} />
-            </div>
+            <fieldset className="grupo-campos carrinho__campos">
+              <legend className="sr-only">Dados para contato</legend>
+              <div className="campo">
+                <label htmlFor="carrinho-nome">Nome</label>
+                <input id="carrinho-nome" value={nome} onChange={(e) => setNome(e.target.value)} required />
+              </div>
+              <div className="campo">
+                <label htmlFor="carrinho-email">E-mail</label>
+                <input
+                  id="carrinho-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="campo">
+                <label htmlFor="carrinho-telefone">Telefone</label>
+                <input id="carrinho-telefone" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
+              </div>
+            </fieldset>
             <button type="submit" disabled={enviando} className="btn-primario">
               {enviando ? 'Enviando...' : 'Enviar solicitação de orçamento'}
             </button>
           </form>
         </div>
-      </div>
+      </section>
     </Layout>
   );
 }

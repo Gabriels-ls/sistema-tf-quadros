@@ -3,6 +3,10 @@
   padding-bottom: 80px;
 }
 
+.container.produto-detalhe__status {
+  padding: 60px 0;
+}
+
 .produto-detalhe__voltar {
   display: inline-block;
   color: var(--color-steel);

@@ -1,0 +1,102 @@
+.chat {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.chat__janela {
+  width: 320px;
+  height: 420px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.chat__cabecalho {
+  background-color: var(--color-navy);
+  color: #fff;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat__fechar {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.chat__mensagens {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.chat__mensagem {
+  text-align: left;
+  margin: 6px 0;
+}
+
+.chat__mensagem--usuario {
+  text-align: right;
+}
+
+.chat__balao {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background-color: #e4e6eb;
+  color: #000;
+  max-width: 80%;
+}
+
+.chat__mensagem--usuario .chat__balao {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.chat__digitando {
+  text-align: left;
+  margin: 6px 0;
+  color: #888;
+}
+
+.chat__form {
+  display: flex;
+  border-top: 1px solid #eee;
+}
+
+.chat__entrada {
+  flex: 1;
+  border: none;
+  padding: 10px;
+  outline: none;
+}
+
+.chat__enviar {
+  padding: 0 16px;
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.chat__abrir {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: #fff;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}

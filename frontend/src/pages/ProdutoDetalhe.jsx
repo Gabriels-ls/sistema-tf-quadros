@@ -62,7 +62,7 @@ function ProdutoDetalhe() {
   if (carregando) {
     return (
       <Layout>
-        <div className="container" style={{ padding: '60px 0' }}>
+        <div className="container produto-detalhe__status">
           <p>Carregando produto...</p>
         </div>
       </Layout>
@@ -72,7 +72,7 @@ function ProdutoDetalhe() {
   if (erro) {
     return (
       <Layout>
-        <div className="container" style={{ padding: '60px 0' }}>
+        <div className="container produto-detalhe__status">
           <p>{erro}</p>
         </div>
       </Layout>
@@ -81,7 +81,7 @@ function ProdutoDetalhe() {
 
   return (
     <Layout>
-      <div className="container produto-detalhe">
+      <section className="container produto-detalhe">
         <Link to="/produtos" className="produto-detalhe__voltar">← Voltar ao catálogo</Link>
 
         <div className="produto-detalhe__grade">
@@ -131,7 +131,7 @@ function ProdutoDetalhe() {
             </button>
           </div>
         </div>
-      </div>
+      </section>
     </Layout>
   );
 }

@@ -72,6 +72,7 @@ function ItemGrupo({ grupo, onEditarGrupo, onExcluirGrupo, onSalvarOpcao, onExcl
       <div className="admin-produtos__form-variacao">
         <input
           placeholder="Nome (ex: 60cm)"
+          aria-label={`Nome da opção do grupo ${grupo.nome}`}
           value={nomeOpcao}
           onChange={(e) => setNomeOpcao(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSalvar(e)}
@@ -80,6 +81,7 @@ function ItemGrupo({ grupo, onEditarGrupo, onExcluirGrupo, onSalvarOpcao, onExcl
           type="number"
           step="0.01"
           placeholder="Preço adicional"
+          aria-label={`Preço adicional da opção do grupo ${grupo.nome}`}
           value={precoOpcao}
           onChange={(e) => setPrecoOpcao(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSalvar(e)}
@@ -242,6 +244,7 @@ function GruposVariacaoEditor({ produtoId, grupos, onGruposLocaisChange, onPersi
       <div className="admin-produtos__form-variacao">
         <input
           placeholder="Nome do grupo (ex: Material, Tamanho, Tela)"
+          aria-label="Nome do grupo de variação"
           value={nomeGrupo}
           onChange={(e) => setNomeGrupo(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSalvarGrupo(e)}

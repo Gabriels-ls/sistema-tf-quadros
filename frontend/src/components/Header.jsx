@@ -6,10 +6,12 @@ function Header() {
     <header className="header">
       <div className="container header__conteudo">
         <Link to="/" className="header__logo">TF QUADROS</Link>
-        <nav className="header__nav">
-          <Link to="/">Início</Link>
-          <Link to="/produtos">Produtos</Link>
-          <Link to="/contato">Contate-nos</Link>
+        <nav id="menu" className="header__nav" aria-label="Menu principal">
+          <ul className="header__menu">
+            <li><Link to="/">Início</Link></li>
+            <li><Link to="/produtos">Produtos</Link></li>
+            <li><Link to="/contato">Contate-nos</Link></li>
+          </ul>
         </nav>
       </div>
     </header>

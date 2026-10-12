@@ -1,12 +1,14 @@
+import './Footer.css';
+
 function Footer() {
   return (
-    <footer style={{ backgroundColor: 'var(--color-navy)', color: 'var(--color-steel-light)', padding: '32px 0', marginTop: '60px' }}>
-      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+    <footer id="rodape" className="rodape">
+      <div className="container rodape__conteudo">
         <div>
-          <strong style={{ color: 'var(--color-white)', fontFamily: 'var(--font-display)' }}>TF QUADROS</strong>
-          <p style={{ fontSize: '13px', marginTop: '4px' }}>Quadros para serigrafia sob medida.</p>
+          <strong className="rodape__marca">TF QUADROS</strong>
+          <p className="rodape__texto">Quadros para serigrafia sob medida.</p>
         </div>
-        <div style={{ fontSize: '13px' }}>
+        <div className="rodape__contato">
           <p>tfquadros@terra.com.br</p>
           <p>(47) 3332-2923</p>
         </div>

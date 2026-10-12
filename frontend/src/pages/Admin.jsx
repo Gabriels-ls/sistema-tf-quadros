@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from 'react';
 import api from '../services/api';
 import { obterTokenAdmin } from '../services/adminAuth';
+import Atalhos from '../components/Atalhos';
 import HeaderAdmin from '../components/HeaderAdmin';
 import './Admin.css';
 
@@ -48,8 +49,9 @@ function Admin() {
 
   return (
     <div>
+      <Atalhos itens={['conteudo', 'menu']} />
       <HeaderAdmin />
-      <div className="container admin-conteudo">
+      <main id="conteudo" className="container admin-conteudo">
         <h1 className="admin-titulo">Solicitações de Orçamento</h1>
 
         {carregando && <p>Carregando orçamentos...</p>}
@@ -62,6 +64,7 @@ function Admin() {
         {!carregando && !erro && orcamentos.length > 0 && (
           <div className="admin-tabela-wrapper">
             <table className="admin-tabela">
+              <caption className="sr-only">Solicitações de orçamento recebidas</caption>
               <thead>
                 <tr>
                   <th>Cliente</th>
@@ -106,6 +109,7 @@ function Admin() {
                       <td>
                         <select
                           className={`admin-status admin-status--${orc.status?.replace(' ', '-')}`}
+                          aria-label={`Status da solicitação de ${orc.clientes?.nome ?? 'cliente'}`}
                           value={orc.status}
                           onChange={(e) => handleMudarStatus(orc.id, e.target.value)}
                         >
@@ -141,7 +145,7 @@ function Admin() {
             </table>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import api from '../services/api';
 import obterTokenCliente from '../services/clienteToken';
 import { useChat } from '../context/useChat';
+import './ChatWidget.css';
 
 function ChatWidget() {
   const { mensagens, adicionarMensagem } = useChat();
@@ -37,81 +38,43 @@ function ChatWidget() {
   }
 
   return (
-    <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000 }}>
+    <div className="chat">
       {aberto && (
-        <div
-          style={{
-            width: '320px',
-            height: '420px',
-            backgroundColor: '#fff',
-            border: '1px solid #ccc',
-            borderRadius: '10px',
-            display: 'flex',
-            flexDirection: 'column',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-            marginBottom: '10px',
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: 'var(--color-navy)',
-              color: '#fff',
-              padding: '12px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
+        <div className="chat__janela">
+          <div className="chat__cabecalho">
             <strong>Atendimento TF Quadros</strong>
             <button
               onClick={() => setAberto(false)}
-              style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '16px' }}
+              className="chat__fechar"
+              aria-label="Fechar o assistente virtual"
             >
               ✕
             </button>
           </div>
 
-          <div style={{ flex: 1, overflowY: 'auto', padding: '10px' }}>
+          <div className="chat__mensagens">
             {mensagens.map((msg, idx) => (
               <div
                 key={idx}
-                style={{
-                  textAlign: msg.autor === 'usuario' ? 'right' : 'left',
-                  margin: '6px 0',
-                }}
+                className={`chat__mensagem ${msg.autor === 'usuario' ? 'chat__mensagem--usuario' : ''}`}
               >
-                <span
-                  style={{
-                    display: 'inline-block',
-                    padding: '8px 12px',
-                    borderRadius: '12px',
-                    backgroundColor: msg.autor === 'usuario' ? 'var(--color-primary)' : '#e4e6eb',
-                    color: msg.autor === 'usuario' ? '#fff' : '#000',
-                    maxWidth: '80%',
-                  }}
-                >
-                  {msg.texto}
-                </span>
+                <span className="chat__balao">{msg.texto}</span>
               </div>
             ))}
-            {enviando && (
-              <div style={{ textAlign: 'left', margin: '6px 0', color: '#888' }}>
-                Digitando...
-              </div>
-            )}
+            {enviando && <div className="chat__digitando">Digitando...</div>}
             <div ref={fimDasMensagensRef} />
           </div>
 
-          <form onSubmit={handleEnviar} style={{ display: 'flex', borderTop: '1px solid #eee' }}>
+          <form onSubmit={handleEnviar} className="chat__form">
             <input
               value={entrada}
               onChange={(e) => setEntrada(e.target.value)}
               placeholder="Digite sua mensagem..."
-              style={{ flex: 1, border: 'none', padding: '10px', outline: 'none' }}
+              aria-label="Mensagem para o assistente virtual"
+              className="chat__entrada"
               disabled={enviando}
             />
-            <button type="submit" disabled={enviando} style={{ padding: '0 16px', border: 'none', background: 'var(--color-primary)', color: '#fff' }}>
+            <button type="submit" disabled={enviando} className="chat__enviar">
               Enviar
             </button>
           </form>
@@ -121,17 +84,8 @@ function ChatWidget() {
       {!aberto && (
         <button
           onClick={() => setAberto(true)}
-          style={{
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            backgroundColor: 'var(--color-primary)',
-            color: '#fff',
-            border: 'none',
-            fontSize: '24px',
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-          }}
+          className="chat__abrir"
+          aria-label="Abrir o assistente virtual"
         >
           💬
         </button>

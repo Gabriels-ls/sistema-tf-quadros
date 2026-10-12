@@ -60,6 +60,10 @@
   gap: 16px;
 }
 
+.carrinho__campos {
+  gap: 16px;
+}
+
 .campo {
   display: flex;
   flex-direction: column;

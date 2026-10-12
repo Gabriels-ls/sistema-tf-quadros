@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import api from '../services/api';
 import { obterTokenAdmin } from '../services/adminAuth';
+import Atalhos from '../components/Atalhos';
 import HeaderAdmin from '../components/HeaderAdmin';
 import GruposVariacaoEditor from '../components/GruposVariacaoEditor';
 import './AdminProdutos.css';
@@ -171,79 +172,91 @@ function limparFormulario() {
 
   return (
     <div>
+      <Atalhos itens={['conteudo', 'menu']} />
       <HeaderAdmin />
-      <div className="container admin-produtos">
+      <main id="conteudo" className="container admin-produtos">
         {mostrarFormulario && (
           <div className="admin-produtos__form-box">
             <h2 className="admin-produtos__subtitulo">
               {editandoId ? 'Editar produto' : 'Novo produto'}
             </h2>
             <form onSubmit={handleSalvar} className="admin-produtos__form">
-              <div className="campo">
-                <label>Nome</label>
-                <input value={nome} onChange={(e) => setNome(e.target.value)} required />
-              </div>
-              <div className="campo">
-                <label>Descrição</label>
-                <input value={descricao} onChange={(e) => setDescricao(e.target.value)} required />
-              </div>
-              <div className="campo">
-                <label>Imagem</label>
-                {imagemUrl && (
-                  <img src={imagemUrl} alt="Prévia do produto" className="admin-produtos__preview-imagem" />
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={inputImagemRef}
-                  onChange={handleSelecionarImagem}
-                  disabled={enviandoImagem}
-                  hidden
-                />
-                <button
-                  type="button"
-                  onClick={() => inputImagemRef.current?.click()}
-                  disabled={enviandoImagem}
-                  className="admin-produtos__escolher-imagem"
-                >
-                  {enviandoImagem ? 'Enviando...' : imagemUrl ? 'Trocar imagem' : 'Escolher imagem'}
-                </button>
-              </div>
-
-              <div className="admin-produtos__secao-preco">
-                <label className="admin-produtos__toggle">
-                  <input
-                    type="checkbox"
-                    checked={usaVariacoes}
-                    onChange={(e) => setUsaVariacoes(e.target.checked)}
-                  />
-                  <span className="admin-produtos__toggle-slider" />
-                </label>
-                <strong>Produto com variações</strong>
-              </div>
-
-              {!usaVariacoes && (
+              <fieldset className="grupo-campos admin-produtos__campos">
+                <legend className="sr-only">Dados do produto</legend>
                 <div className="campo">
-                  <label>Preço</label>
+                  <label htmlFor="produto-nome">Nome</label>
+                  <input id="produto-nome" value={nome} onChange={(e) => setNome(e.target.value)} required />
+                </div>
+                <div className="campo">
+                  <label htmlFor="produto-descricao">Descrição</label>
                   <input
-                    type="number"
-                    step="0.01"
-                    value={preco}
-                    onChange={(e) => setPreco(e.target.value)}
+                    id="produto-descricao"
+                    value={descricao}
+                    onChange={(e) => setDescricao(e.target.value)}
+                    required
                   />
                 </div>
-              )}
+                <div className="campo">
+                  <label htmlFor="produto-imagem">Imagem</label>
+                  {imagemUrl && (
+                    <img src={imagemUrl} alt="Prévia do produto" className="admin-produtos__preview-imagem" />
+                  )}
+                  <input
+                    id="produto-imagem"
+                    type="file"
+                    accept="image/*"
+                    ref={inputImagemRef}
+                    onChange={handleSelecionarImagem}
+                    disabled={enviandoImagem}
+                    hidden
+                  />
+                  <button
+                    type="button"
+                    onClick={() => inputImagemRef.current?.click()}
+                    disabled={enviandoImagem}
+                    className="admin-produtos__escolher-imagem"
+                  >
+                    {enviandoImagem ? 'Enviando...' : imagemUrl ? 'Trocar imagem' : 'Escolher imagem'}
+                  </button>
+                </div>
 
-              {usaVariacoes && (
-                <div className="admin-produtos__variacoes">
-                  <GruposVariacaoEditor
-                    produtoId={editandoId}
-                    grupos={gruposExibidos}
-                    onGruposLocaisChange={setGruposNovos}
-                    onPersistido={carregarProdutos}
-                  />
+                <div className="admin-produtos__secao-preco">
+                  <label className="admin-produtos__toggle">
+                    <input
+                      type="checkbox"
+                      aria-label="Produto com variações"
+                      checked={usaVariacoes}
+                      onChange={(e) => setUsaVariacoes(e.target.checked)}
+                    />
+                    <span className="admin-produtos__toggle-slider" />
+                  </label>
+                  <strong>Produto com variações</strong>
                 </div>
-              )}
+
+                {!usaVariacoes && (
+                  <div className="campo">
+                    <label htmlFor="produto-preco">Preço</label>
+                    <input
+                      id="produto-preco"
+                      type="number"
+                      step="0.01"
+                      value={preco}
+                      onChange={(e) => setPreco(e.target.value)}
+                    />
+                  </div>
+                )}
+
+                {usaVariacoes && (
+                  <div className="admin-produtos__variacoes">
+                    <GruposVariacaoEditor
+                      produtoId={editandoId}
+                      grupos={gruposExibidos}
+                      onGruposLocaisChange={setGruposNovos}
+                      onPersistido={carregarProdutos}
+                    />
+                  </div>
+                )}
+              </fieldset>
 
               <div className="admin-produtos__acoes-form">
                 <button type="submit" disabled={salvando} className="btn-primario">
@@ -277,6 +290,7 @@ function limparFormulario() {
         {!carregando && !erro && (
           <div className="admin-tabela-wrapper">
             <table className="admin-tabela">
+              <caption className="sr-only">Produtos cadastrados no catálogo</caption>
               <thead>
                 <tr>
                   <th>Nome</th>
@@ -317,7 +331,7 @@ function limparFormulario() {
             </table>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
